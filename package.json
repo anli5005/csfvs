@@ -1,0 +1,19 @@
+{
+    "name": "csfvs",
+    "version": "0.1",
+    "repository": {
+        "url": "git+https://github.com/anli5005/csfvs.git"
+    },
+    "main": "server/index.js",
+    "type": "module",
+    "scripts": {
+        "start": "node server/index.js"
+    },
+    "dependencies": {
+        "dotenv": "^8.2.0",
+        "express": "^4.17.1",
+        "express-handlebars": "^5.3.0",
+        "handlebars": "^4.7.7",
+        "passport": "^0.4.1"
+    }
+}

@@ -1,0 +1,14 @@
+{
+    "include": [
+        "**.js"
+    ],
+    "compilerOptions": {
+        "checkJs": true,
+        "target": "es2019",
+        "module": "es2020",
+        "moduleResolution": "node",
+        "lib": [
+            "es2019"
+        ]
+    }
+}
