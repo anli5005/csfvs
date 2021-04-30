@@ -20,8 +20,12 @@ async function startServer() {
     app.set("views", join(dir, "../views"));
     app.set("view engine", "handlebars");
 
-    app.use("/", (req, res) => {
-        res.render("index");
+    app.get("/", (req, res) => {
+        res.render("signin", {layout: "panel"});
+    });
+
+    app.get("/welcome", (req, res) => {
+        res.render("welcome", {layout: "panel"});
     });
 
     app.use(express.static(join(dir, "../public")));

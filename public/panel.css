@@ -1,0 +1,30 @@
+#background-canvas-container {
+    overflow: hidden;
+    width: 100vw;
+    height: 100vh;
+}
+
+.main-panel {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 2rem;
+    border-radius: 8px;
+    background-color: rgba(255, 255, 255, 0.7);
+    backdrop-filter: saturate(120%) blur(10px);
+    -webkit-backdrop-filter: saturate(120%) blur(10px);
+    box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.175);
+    max-width: 540px;
+}
+
+.background-attribution {
+    position: absolute;
+    bottom: 8px;
+    left: 8px;
+}
+
+.name-input {
+    width: 100%;
+    max-width: 360px;
+}
