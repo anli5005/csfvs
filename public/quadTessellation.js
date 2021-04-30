@@ -29,7 +29,7 @@ let shift = {
 let rowsCols;
 
 function setup() {
-    frameRate(24);
+    frameRate(30);
     noiseDetail(2, 4)
     createCanvas(windowWidth, windowHeight).parent("background-canvas-container");
 
@@ -55,7 +55,7 @@ function draw() {
     __macro_calc_shifts();
     __macro_draw();
 
-    incrementPerlinPoints(0.003);
+    incrementPerlinPoints(0.001);
 }
 
 function rotateAround(vector) {
