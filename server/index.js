@@ -23,6 +23,7 @@ const dir = dirname(fileURLToPath(import.meta.url));
 
 async function startServer() {
     const db = new Client();
+    db.connect();
 
     const app = express();
 
@@ -49,8 +50,6 @@ async function startServer() {
             }
         }
     ));
-
-    findOrCreateUser(db, {outlook_id: "a", email: "a", name: "a", type: 0});
 
     app.engine("handlebars", exphbs());
     app.use(express.urlencoded({extended: false}));
