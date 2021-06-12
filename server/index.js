@@ -80,13 +80,28 @@ async function startServer() {
     app.get('/auth/openid/return',
         passport.authenticate('google', {failureRedirect: "/"}),
         function(req, res) {
-            res.send("Signed in as " + req.user.user_id);
+            res.redirect("/projects");
         }
     );
 
     app.get('/logout', function(req, res){
         req.logout();
         res.redirect('/');
+    });
+
+    app.get("/projects", (req, res) => {
+        res.render("projects", {
+            user: req.user,
+            projects: [{project_id: "f", name: "This is a project"}]
+        })
+    });
+
+    app.get("/projects/:id", (req, res) => {
+        res.render("project", {
+            user: req.user,
+            projects: [{ project_id: "f", name: "This is a project" }],
+            project: {project_id: "f", name: "sdf"}
+        })
     });
 
     app.use(express.static(join(dir, "../public")));

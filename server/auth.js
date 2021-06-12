@@ -29,7 +29,6 @@ export async function findOrCreateUser(db, profile) {
  */
 export function registerSerialization(passport, db) {
     passport.serializeUser((user, done) => {
-        console.log(user);
         // @ts-ignore
         done(null, user.user_id);
     });

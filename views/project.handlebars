@@ -1,0 +1,14 @@
+<h1>{{project.name}}</h1>
+<form action="/projects/{{project.name}}/vote" method="POST">
+    <h2>vote</h2>
+    <div class="criteria">
+        <h3>Thing?</h3>
+        <p>do the thing do the good</p>
+        <input type="radio" name="criteria1" value="1" /> 1
+        <input type="radio" name="criteria1" value="2" /> 2
+        <input type="radio" name="criteria1" value="3" /> 3
+        <input type="radio" name="criteria1" value="4" /> 4
+        <input type="radio" name="criteria1" value="5" /> 5
+    </div>
+    <button type="submit">Submit</button>
+</form>
