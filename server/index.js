@@ -1,3 +1,6 @@
+// @ts-nocheck
+// We'll turn on typechecking later
+
 import express from 'express';
 import { config } from 'dotenv';
 import pg from 'pg';
@@ -5,8 +8,8 @@ import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import exphbs from 'express-handlebars';
 import passport from 'passport';
-import { findOrCreateUser } from './auth.js';
-import AzureAdOAuth2Strategy from 'passport-azure-ad-oauth2';
+import { findOrCreateUser, registerSerialization } from './auth.js';
+import { OAuth2Strategy } from 'passport-google-oauth';
 
 config();
 
@@ -24,27 +27,27 @@ const dir = dirname(fileURLToPath(import.meta.url));
 async function startServer() {
     const db = new Client();
     db.connect();
+    registerSerialization(passport, db);
 
     const app = express();
 
-    passport.use(new AzureAdOAuth2Strategy({
-        clientID: process.env.CLIENT_ID,
-        clientSecret: process.env.CLIENT_SECRET,
-        callbackURL: process.env.REDIRECT_URL
-    },
+    passport.use(new OAuth2Strategy(
+        {
+            clientID: process.env.CLIENT_ID,
+            clientSecret: process.env.CLIENT_SECRET,
+            callbackURL: process.env.REDIRECT_URL,
+            scope: ["profile", "openid", "email"]
+        },
         /**
          * 
          * @param {string} _accessToken 
          * @param {string} _refreshToken 
-         * @param {{id_token: string}} params 
-         * @param {{provider: string}} _data 
+         * @param {any} params 
          * @param {StrategyCallback} done 
          */
-        async function (_accessToken, _refreshToken, params, _data, done) {
+        async function (_accessToken, _refreshToken, params, done) {
             try {
-                const token = params.id_token;
-                const profile = JSON.parse(Buffer.from(token.split(".")[1], "base64").toString("utf8"));
-                done(null, await findOrCreateUser(db, {outlook_id: profile.oid, email: profile.upn, name: profile.name, type: 1}));
+                done(null, await findOrCreateUser(db, {outlook_id: params.id, email: params.emails[0].value, name: params.displayName, type: "default"}));
             } catch (e) {
                 done(e, null);
             }
@@ -68,18 +71,16 @@ async function startServer() {
     });
     
     app.get('/login',
-        passport.authenticate('azure_ad_oauth2', {
-            failureRedirect: '/',
-        }),
+        passport.authenticate('google', {failureRedirect: '/',}),
         function(req, res) {
             res.redirect('/');
         }
     );
 
     app.get('/auth/openid/return',
-        passport.authenticate('azure_ad_oauth2', {failureRedirect: "/"}),
+        passport.authenticate('google', {failureRedirect: "/"}),
         function(req, res) {
-            res.redirect('/');
+            res.send("Signed in as " + req.user.user_id);
         }
     );
 
