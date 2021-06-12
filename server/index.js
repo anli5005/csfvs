@@ -2,6 +2,7 @@
 // We'll turn on typechecking later
 
 import express from 'express';
+import session from 'express-session';
 import { config } from 'dotenv';
 import pg from 'pg';
 import { join, dirname } from 'node:path';
@@ -59,6 +60,7 @@ async function startServer() {
     app.set("views", join(dir, "../views"));
     app.set("view engine", "handlebars");
 
+    app.use(session({ secret: "EDWARD CHANGE ME" }));
     app.use(passport.initialize());
     app.use(passport.session());
 
