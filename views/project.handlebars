@@ -1,33 +1,119 @@
-<div class="p-4">
-    <h2>{{project.name}}</h2>
-    <p class="lead">{{project.description}}</p>
+{{#if color}}
+<style>
+    #content {
+        background-image: linear-gradient(to bottom, {{color}}, white);
+        background-size: 100% 200px;
+        background-repeat: no-repeat;
+    }
+</style>
+{{/if}}
+<div class="p-4 d-flex w-100">
+    <div class="flex-grow-1">
+        <h2 class="display-4">{{project.name}}</h2>
+        <div class="mb-2" style="opacity: 0.7;">
+            {{#if authors}}<span class="me-3"><i class="bi bi-people"></i> {{authors}}</span>{{/if}}
+            <span class="me-3"><i class="bi bi-clock"></i> {{#if project.session}}Session {{project.session}}{{else}}No Session{{/if}}, {{#if
+                project.room}}Room {{project.room}}{{else}}No Room{{/if}}</span>
+        </div>
+        <p class="lead">{{project.description}}</p>
+        {{#if project.url}}<div><i class="bi bi-link"></i> <a class="text-decoration-none" href="{{project.url}}" target="_blank">{{project.url}} <i class="bi bi-box-arrow-up-right"></i></a></div>{{/if}}
+        {{#if project.github}}<div><i class="bi bi-github"></i> <a class="text-decoration-none" href="{{project.github}}" target="_blank">{{project.github}} <i class="bi bi-box-arrow-up-right"></i></a></div>{{/if}}
+    </div>
+    {{#if project.image}}<div class="rounded project-image"><img src="{{project.image}}" /></div>{{/if}}
 </div>
 <hr class="mx-4 my-2" />
+{{#if showReviews}}
+<div class="p-4">
+    <h3>Judge reviews</h3>
+    <table class="table">
+        <thead class="bg-white sticky-top">
+            <tr>
+                {{#each criteria}}
+                <th scope="col">{{title}}</th>
+                {{/each}}
+            </tr>
+        </thead>
+        <tbody>
+            {{#each judged}}
+            <tr id="{{review_id}}">
+                {{#each criteria}}
+                <td>{{#if val}}{{val}}{{else}}{{description}}{{/if}}</td>
+                {{/each}}
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+    {{#if judged}}
+    {{else}}
+    <p>There are no reviews from the judges yet. Check back later!</p>
+    {{/if}}
+    <h3 class="mt-5">Other reviews</h3>
+    <table class="table">
+        <thead class="bg-white sticky-top">
+            <tr>
+                {{#each criteria}}
+                <th scope="col">{{title}}</th>
+                {{/each}}
+            </tr>
+        </thead>
+        <tbody>
+            {{#each reviews}}
+            <tr id="{{review_id}}">
+                {{#each criteria}}
+                <td>{{#if val}}{{val}}{{else}}{{description}}{{/if}}</td>
+                {{/each}}
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+    {{#if reviews}}
+    {{else}}
+    <p>There are no reviews yet. Check back later!</p>
+    {{/if}}
+</div>
+{{else}}
+{{#if review}}
+<div class="p-4">
+{{else}}
 <form class="p-4" action="/projects/{{project.project_id}}/vote" method="POST">
+{{/if}}
+    {{#if review}}
+    <h3 class="mb-0">Your review</h3>
+    <p>Thanks for your feedback!</p>
+    {{else}}
     <h3>Send feedback</h3>
+    {{/if}}
     <div class="row">
         {{#each criteria}}
         <div class="col-4 criteria mt-3">
             {{#if (isequal type "free")}}
             <label for="{{criteria_id}}">
-                <h5 class="mb-0">{{title}}</h5>
+                <h5 class="{{#if description}}mb-0{{/if}}">{{title}}</h5>
                 {{#if description}}<p class="text-muted">{{description}}</p>{{/if}}
             </label>
-            <textarea class="form-control free-response" name="{{criteria_id}}" id="{{criteria_id}}"></textarea>
+            <textarea class="form-control free-response" name="{{criteria_id}}" id="{{criteria_id}}" {{#if @root.review}}disabled{{/if}}>{{response.description}}</textarea>
             {{/if}}
             {{#if (isequal type "scale")}}
-            <h5 class="mb-0">{{title}}</h5>
+            <h5 class="{{#if description}}mb-0{{/if}}">{{title}}</h5>
             {{#if description}}<p class="text-muted">{{description}}</p>{{/if}}
             <div class="scale">
-                <input type="radio" name="{{criteria_id}}" id="{{criteria_id}}-1" value="1" /><label for="{{criteria_id}}-1">1</label>
-                <input type="radio" name="{{criteria_id}}" id="{{criteria_id}}-2" value="2" /><label for="{{criteria_id}}-2">2</label>
-                <input type="radio" name="{{criteria_id}}" id="{{criteria_id}}-3" value="3" /><label for="{{criteria_id}}-3">3</label>
-                <input type="radio" name="{{criteria_id}}" id="{{criteria_id}}-4" value="4" /><label for="{{criteria_id}}-4">4</label>
-                <input type="radio" name="{{criteria_id}}" id="{{criteria_id}}-5" value="5" /><label for="{{criteria_id}}-5">5</label>
+                <input type="radio" name="{{criteria_id}}" id="{{criteria_id}}-1" value="1" {{#if @root.review}}disabled{{/if}} {{#if (isequal response.val 1)}}checked{{/if}} /><label for="{{criteria_id}}-1">1</label>
+                <input type="radio" name="{{criteria_id}}" id="{{criteria_id}}-2" value="2" {{#if @root.review}}disabled{{/if}} {{#if (isequal response.val 2)}}checked{{/if}} /><label for="{{criteria_id}}-2">2</label>
+                <input type="radio" name="{{criteria_id}}" id="{{criteria_id}}-3" value="3" {{#if @root.review}}disabled{{/if}} {{#if (isequal response.val 3)}}checked{{/if}} /><label for="{{criteria_id}}-3">3</label>
+                <input type="radio" name="{{criteria_id}}" id="{{criteria_id}}-4" value="4" {{#if @root.review}}disabled{{/if}} {{#if (isequal response.val 4)}}checked{{/if}} /><label for="{{criteria_id}}-4">4</label>
+                <input type="radio" name="{{criteria_id}}" id="{{criteria_id}}-5" value="5" {{#if @root.review}}disabled{{/if}} {{#if (isequal response.val 5)}}checked{{/if}} /><label for="{{criteria_id}}-5">5</label>
             </div>
             {{/if}}
         </div>
         {{/each}}
     </div>
+    {{#if review}}
+    {{else}}
     <button class="my-3 btn btn-primary" type="submit">Submit</button>
+    {{/if}}
+{{#if review}}
+</div>
+{{else}}
 </form>
+{{/if}}
+{{/if}}

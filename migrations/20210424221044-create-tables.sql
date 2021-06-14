@@ -20,7 +20,8 @@ CREATE TABLE users (
 
 CREATE TABLE projects_users_xref (
     project_id UUID NOT NULL REFERENCES projects ON DELETE CASCADE,
-    email TEXT NOT NULL REFERENCES users(email) ON DELETE CASCADE
+    email TEXT NOT NULL,
+    CONSTRAINT projects_users_xref_pkey PRIMARY KEY (project_id, email)
 );
 
 CREATE TABLE criteria (

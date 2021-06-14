@@ -3,7 +3,19 @@
     <h2>Welcome to csfvs!</h2>
     <p>Get started by choosing a project to the left.</p>
     <p class="mb-0 fst-italic">You're currently logged in as {{user.name}}. <a class="text-danger" href="/logout">Log out.</a></p>
+    {{#if projects}}
+    <hr/>
+    <h4>Your Projects</h3>
+    <div class="list-group">
+        {{#each projects}}
+        <a class="list-group-item list-group-item-action" href="/projects/{{project_id}}">
+            <p class="mb-0 fw-6">{{name}}</p>
+        </a>
+        {{/each}}
+    </div>
+    {{/if}}
 </div>
+
 <style>
 #content {
     position: relative;

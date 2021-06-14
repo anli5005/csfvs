@@ -10,9 +10,11 @@ import { fileURLToPath } from 'node:url';
 import exphbs from 'express-handlebars';
 import passport from 'passport';
 import { findOrCreateUser, registerSerialization } from './auth.js';
-import { getAllProjects, getProjectById, getUserProjects } from './projects.js';
-import { getAllCriteria, createReview } from './reviews.js';
+import { formatAuthors, getProjectById, getUserProjects, userOwnsProject } from './projects.js';
+import { getAllCriteria, createReview, getUserReview, getReviewCriteria, getProjectReviews, processReviews } from './reviews.js';
 import { OAuth2Strategy } from 'passport-google-oauth';
+import { getSidebarDetails } from './sidebar.js';
+import { lightColor, validateColor } from './color.js';
 
 config();
 
@@ -77,7 +79,8 @@ async function startServer() {
 
         res.render("home", {
             user: req.user,
-            projects: await getAllProjects(db),
+            projects: await getUserProjects(db, req.user),
+            sidebar: await getSidebarDetails(db),
             home: true
         });
     });
@@ -114,11 +117,37 @@ async function startServer() {
             return res.redirect("/login");
         }
 
+        const project = getProjectById(db, req.params.id);
+        let review, judged, reviews;
+        let showReviews = false;
+        let criteria = await getAllCriteria(db);
+
+        if (req.user.type === "admin" || await userOwnsProject(db, req.user, await project)) {
+            showReviews = true;
+            judged = processReviews(await getProjectReviews(db, await project, "judge"), criteria);
+            reviews = processReviews(await getProjectReviews(db, await project, "default"), criteria);
+        } else {
+            review = await getUserReview(db, req.user, await project);
+            if (review) {
+                const xref = await getReviewCriteria(db, review);
+                criteria = criteria.map(c => {
+                    const response = xref.find(el => el.criteria_id === c.criteria_id);
+                    return { ...c, response };
+                });
+            }
+        }
+
         res.render("project", {
             user: req.user,
-            projects: await getAllProjects(db),
-            project: await getProjectById(db, req.params.id),
-            criteria: await getAllCriteria(db)
+            sidebar: await getSidebarDetails(db),
+            project: await project,
+            authors: formatAuthors(await project),
+            criteria: criteria,
+            judged,
+            review,
+            reviews,
+            showReviews,
+            color: validateColor((await project).color) && lightColor((await project).color) 
         });
     });
 
@@ -129,6 +158,15 @@ async function startServer() {
 
         const criteria = await getAllCriteria(db);
         const project = await getProjectById(db, req.params.id);
+        
+        if (await userOwnsProject(db, req.user, project)) {
+            return res.status(400).send("You can't vote on your own project!");
+        }
+
+        if (await getUserReview(db, req.user, project)) {
+            return res.status(400).send("Already voted");
+        }
+
         const responses = criteria.map(c => {
             if (c.type === "free") {
                 return {criteria_id: c.criteria_id, description: req.body[c.criteria_id]};
@@ -139,10 +177,38 @@ async function startServer() {
             }
         });
         await createReview(db, req.user, project, responses);
-        res.render("thanks", {
+        res.redirect(`/projects/${project.project_id}`);
+    });
+
+    app.get("/admin/users", async (req, res) => {
+        if (!req.user) {
+            return res.redirect("/login");
+        }
+
+        if (req.user.type !== "admin") {
+            return res.sendStatus(403);
+        }
+
+        res.render("users", {
             user: req.user,
-            projects: await getAllProjects(db),
-            project
+            sidebar: await getSidebarDetails(db),
+            users: true
+        });
+    });
+
+    app.get("/admin/dump", async (req, res) => {
+        if (!req.user) {
+            return res.redirect("/login");
+        }
+
+        if (req.user.type !== "admin") {
+            return res.sendStatus(403);
+        }
+
+        res.render("dump", {
+            user: req.user,
+            sidebar: await getSidebarDetails(db),
+            dump: true
         });
     });
 
