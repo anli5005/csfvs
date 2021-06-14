@@ -1,14 +1,33 @@
-<h1>{{project.name}}</h1>
-<form action="/projects/{{project.name}}/vote" method="POST">
-    <h2>vote</h2>
-    <div class="criteria">
-        <h3>Thing?</h3>
-        <p>do the thing do the good</p>
-        <input type="radio" name="criteria1" value="1" /> 1
-        <input type="radio" name="criteria1" value="2" /> 2
-        <input type="radio" name="criteria1" value="3" /> 3
-        <input type="radio" name="criteria1" value="4" /> 4
-        <input type="radio" name="criteria1" value="5" /> 5
+<div class="p-4">
+    <h2>{{project.name}}</h2>
+    <p class="lead">{{project.description}}</p>
+</div>
+<hr class="mx-4 my-2" />
+<form class="p-4" action="/projects/{{project.project_id}}/vote" method="POST">
+    <h3>Send feedback</h3>
+    <div class="row">
+        {{#each criteria}}
+        <div class="col-4 criteria mt-3">
+            {{#if (isequal type "free")}}
+            <label for="{{criteria_id}}">
+                <h5 class="mb-0">{{title}}</h5>
+                {{#if description}}<p class="text-muted">{{description}}</p>{{/if}}
+            </label>
+            <textarea class="form-control free-response" name="{{criteria_id}}" id="{{criteria_id}}"></textarea>
+            {{/if}}
+            {{#if (isequal type "scale")}}
+            <h5 class="mb-0">{{title}}</h5>
+            {{#if description}}<p class="text-muted">{{description}}</p>{{/if}}
+            <div class="scale">
+                <input type="radio" name="{{criteria_id}}" id="{{criteria_id}}-1" value="1" /><label for="{{criteria_id}}-1">1</label>
+                <input type="radio" name="{{criteria_id}}" id="{{criteria_id}}-2" value="2" /><label for="{{criteria_id}}-2">2</label>
+                <input type="radio" name="{{criteria_id}}" id="{{criteria_id}}-3" value="3" /><label for="{{criteria_id}}-3">3</label>
+                <input type="radio" name="{{criteria_id}}" id="{{criteria_id}}-4" value="4" /><label for="{{criteria_id}}-4">4</label>
+                <input type="radio" name="{{criteria_id}}" id="{{criteria_id}}-5" value="5" /><label for="{{criteria_id}}-5">5</label>
+            </div>
+            {{/if}}
+        </div>
+        {{/each}}
     </div>
-    <button type="submit">Submit</button>
+    <button class="my-3 btn btn-primary" type="submit">Submit</button>
 </form>

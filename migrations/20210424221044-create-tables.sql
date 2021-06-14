@@ -13,10 +13,14 @@ CREATE TABLE projects (
 CREATE TABLE users (
     user_id UUID PRIMARY KEY NOT NULL DEFAULT uuid_generate_v4(),
     outlook_id TEXT NOT NULL,
-    email TEXT NOT NULL,
+    email TEXT UNIQUE NOT NULL,
     name TEXT NOT NULL,
-    type TEXT NOT NULL,
-    project_id UUID REFERENCES projects ON DELETE SET NULL
+    type TEXT NOT NULL
+);
+
+CREATE TABLE projects_users_xref (
+    project_id UUID NOT NULL REFERENCES projects ON DELETE CASCADE,
+    email TEXT NOT NULL REFERENCES users(email) ON DELETE CASCADE
 );
 
 CREATE TABLE criteria (
@@ -29,14 +33,13 @@ CREATE TABLE criteria (
 CREATE TABLE reviews (
     review_id UUID PRIMARY KEY NOT NULL DEFAULT uuid_generate_v4(),
     user_id UUID NOT NULL REFERENCES users ON DELETE CASCADE,
-    project_id UUID NOT NULL REFERENCES projects ON DELETE CASCADE,
-    description TEXT NOT NULL
+    project_id UUID NOT NULL REFERENCES projects ON DELETE CASCADE
 );
 
-CREATE TABLE xref (
+CREATE TABLE review_xref (
     review_id UUID NOT NULL REFERENCES reviews ON DELETE CASCADE,
     criteria_id UUID NOT NULL REFERENCES criteria ON DELETE CASCADE,
-    description TEXT NOT NULL,
+    description TEXT,
     val INT,
-    CONSTRAINT xref_pkey PRIMARY KEY (review_id, criteria_id)
+    CONSTRAINT review_xref_pkey PRIMARY KEY (review_id, criteria_id)
 );

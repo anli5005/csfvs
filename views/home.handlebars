@@ -1,0 +1,35 @@
+<div id="background-canvas-container"></div>
+<div class="main-panel text-center">
+    <h2>Welcome to csfvs!</h2>
+    <p>Get started by choosing a project to the left.</p>
+    <p class="mb-0 fst-italic">You're currently logged in as {{user.name}}. <a class="text-danger" href="/logout">Log out.</a></p>
+</div>
+<style>
+#content {
+    position: relative;
+    height: 100%;
+    overflow: hidden;
+}
+
+#background-canvas-container {
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+}
+
+.main-panel {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 2rem;
+    border-radius: 8px;
+    background-color: rgba(255, 255, 255, 0.7);
+    backdrop-filter: saturate(120%) blur(10px);
+    -webkit-backdrop-filter: saturate(120%) blur(10px);
+    box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.175);
+    max-width: 540px;
+}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.3.1/p5.min.js"></script>
+<script src="/quadTessellation.js"></script>

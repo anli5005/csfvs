@@ -10,6 +10,8 @@ import { fileURLToPath } from 'node:url';
 import exphbs from 'express-handlebars';
 import passport from 'passport';
 import { findOrCreateUser, registerSerialization } from './auth.js';
+import { getAllProjects, getProjectById, getUserProjects } from './projects.js';
+import { getAllCriteria, createReview } from './reviews.js';
 import { OAuth2Strategy } from 'passport-google-oauth';
 
 config();
@@ -55,7 +57,11 @@ async function startServer() {
         }
     ));
 
-    app.engine("handlebars", exphbs());
+    app.engine("handlebars", exphbs({
+        helpers: {
+            isequal(a, b) { return a === b; }
+        }
+    }));
     app.use(express.urlencoded({extended: false}));
     app.set("views", join(dir, "../views"));
     app.set("view engine", "handlebars");
@@ -64,7 +70,19 @@ async function startServer() {
     app.use(passport.initialize());
     app.use(passport.session());
 
-    app.get("/", (req, res) => {
+    app.get("/", async (req, res) => {
+        if (!req.user) {
+            return res.redirect("/login");
+        }
+
+        res.render("home", {
+            user: req.user,
+            projects: await getAllProjects(db),
+            home: true
+        });
+    });
+
+    app.get("/login", (req, res) => {
         res.render("signin", {layout: "panel"});
     });
 
@@ -72,17 +90,17 @@ async function startServer() {
         res.render("welcome", {layout: "panel"});
     });
     
-    app.get('/login',
-        passport.authenticate('google', {failureRedirect: '/',}),
+    app.get('/auth/google',
+        passport.authenticate('google', {failureRedirect: '/login',}),
         function(req, res) {
             res.redirect('/');
         }
     );
 
     app.get('/auth/openid/return',
-        passport.authenticate('google', {failureRedirect: "/"}),
+        passport.authenticate('google', {failureRedirect: "/login"}),
         function(req, res) {
-            res.redirect("/projects");
+            res.redirect("/");
         }
     );
 
@@ -91,19 +109,41 @@ async function startServer() {
         res.redirect('/');
     });
 
-    app.get("/projects", (req, res) => {
-        res.render("projects", {
-            user: req.user,
-            projects: [{project_id: "f", name: "This is a project"}]
-        })
-    });
+    app.get("/projects/:id", async (req, res) => {
+        if (!req.user) {
+            return res.redirect("/login");
+        }
 
-    app.get("/projects/:id", (req, res) => {
         res.render("project", {
             user: req.user,
-            projects: [{ project_id: "f", name: "This is a project" }],
-            project: {project_id: "f", name: "sdf"}
-        })
+            projects: await getAllProjects(db),
+            project: await getProjectById(db, req.params.id),
+            criteria: await getAllCriteria(db)
+        });
+    });
+
+    app.post("/projects/:id/vote", async (req, res) => {
+        if (!req.user) {
+            return res.redirect("/login");
+        }
+
+        const criteria = await getAllCriteria(db);
+        const project = await getProjectById(db, req.params.id);
+        const responses = criteria.map(c => {
+            if (c.type === "free") {
+                return {criteria_id: c.criteria_id, description: req.body[c.criteria_id]};
+            } else if (c.type === "scale") {
+                const val = parseInt(req.body[c.criteria_id]);
+                if (isNaN(val)) return {criteria_id: c.criteria_id};
+                return {criteria_id: c.criteria_id, val};
+            }
+        });
+        await createReview(db, req.user, project, responses);
+        res.render("thanks", {
+            user: req.user,
+            projects: await getAllProjects(db),
+            project
+        });
     });
 
     app.use(express.static(join(dir, "../public")));
