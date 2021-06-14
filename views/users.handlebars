@@ -1,0 +1,42 @@
+<form class="p-4" method="POST" href="/">
+    <h2>Manage users</h2>
+    <div class="py-2 sticky-top bg-white">
+        <select class="form-select" name="action">
+            <option>Action</option>
+            <option value="make-default">Make default</option>
+            <option value="make-judge">Make judge</option>
+        </select>
+    </div>
+    <table class="table">
+        <thead class="bg-white">
+            <tr>
+                <th scope="col"></th>
+                <th scope="col">ID</th>
+                <th scope="col">Name</th>
+                <th scope="col">Email</th>
+                <th scope="col">Type</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each users}}
+            <tr id="{{user_id}}">
+                <td><input type="checkbox" name="user-{{user_id}}" /></td>
+                <td><code>{{user_id}}</code></td>
+                <td>{{name}}</td>
+                <td>{{email}}</td>
+                <td>
+                    {{#if (isequal type "admin")}}
+                    <span class="text-danger fw-bold">Admin</span>
+                    {{/if}}
+                    {{#if (isequal type "judge")}}
+                    <span class="text-success fw-bold">Judge</span>
+                    {{/if}}
+                    {{#if (isequal type "default")}}
+                    <span>Default</span>
+                    {{/if}}
+                </td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</form>

@@ -15,6 +15,7 @@ import { getAllCriteria, createReview, getUserReview, getReviewCriteria, getProj
 import { OAuth2Strategy } from 'passport-google-oauth';
 import { getSidebarDetails } from './sidebar.js';
 import { lightColor, validateColor } from './color.js';
+import { getAllUsers } from './users.js';
 
 config();
 
@@ -192,7 +193,8 @@ async function startServer() {
         res.render("users", {
             user: req.user,
             sidebar: await getSidebarDetails(db),
-            users: true
+            userManagement: true,
+            users: await getAllUsers(db)
         });
     });
 
