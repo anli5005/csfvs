@@ -39,12 +39,12 @@ export async function getProjectReviews(db, project, type) {
 
     if (type) {
         res = await db.query(
-            "SELECT r.review_id, array_agg(x.criteria_id ORDER BY x.criteria_id) as criteria_ids, array_agg(x.val ORDER BY x.criteria_id) as vals, array_agg(x.description ORDER BY x.criteria_id) as descriptions FROM reviews as r LEFT JOIN (SELECT c.criteria_id, x.val, x.description, x.review_id FROM review_xref as x, criteria as c WHERE x.criteria_id = c.criteria_id) as x ON r.review_id = x.review_id LEFT JOIN users as u ON r.user_id = u.user_id WHERE r.project_id = $1 AND u.type = $2 GROUP BY r.review_id;",
+            "SELECT r.review_id, array_agg(x.criteria_id ORDER BY x.ordering) as criteria_ids, array_agg(x.val ORDER BY x.ordering) as vals, array_agg(x.description ORDER BY x.ordering) as descriptions FROM reviews as r LEFT JOIN (SELECT c.criteria_id, c.ordering, x.val, x.description, x.review_id FROM review_xref as x, criteria as c WHERE x.criteria_id = c.criteria_id) as x ON r.review_id = x.review_id LEFT JOIN users as u ON r.user_id = u.user_id WHERE r.project_id = $1 AND u.type = $2 GROUP BY r.review_id;",
             [project.project_id, type]
         );
     } else {
         res = await db.query(
-            "SELECT r.review_id, array_agg(x.criteria_id ORDER BY x.criteria_id) as criteria_ids, array_agg(x.val ORDER BY x.criteria_id) as vals, array_agg(x.description ORDER BY x.criteria_id) as descriptions FROM reviews as r LEFT JOIN (SELECT c.criteria_id, x.val, x.description, x.review_id FROM review_xref as x, criteria as c WHERE x.criteria_id = c.criteria_id) as x ON r.review_id = x.review_id WHERE r.project_id = $1 GROUP BY r.review_id;",
+            "SELECT r.review_id, array_agg(x.criteria_id ORDER BY x.ordering) as criteria_ids, array_agg(x.val ORDER BY x.ordering) as vals, array_agg(x.description ORDER BY x.ordering) as descriptions FROM reviews as r LEFT JOIN (SELECT c.criteria_id, c.ordering, x.val, x.description, x.review_id FROM review_xref as x, criteria as c WHERE x.criteria_id = c.criteria_id) as x ON r.review_id = x.review_id WHERE r.project_id = $1 GROUP BY r.review_id;",
             [project.project_id]
         );
     }
