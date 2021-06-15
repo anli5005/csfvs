@@ -74,7 +74,7 @@ async function startServer() {
 
     app.use(session({
         store: new pgSession({pool: db}),
-        secret: "EDWARD CHANGE ME",
+        secret: process.env.SESSION_SECRET || "EDWARD CHANGE ME",
         resave: false,
         saveUninitialized: false
     }));
