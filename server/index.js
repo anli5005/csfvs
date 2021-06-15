@@ -143,7 +143,8 @@ async function startServer() {
         let showReviews = false;
         let lockReviews = false;
         let criteria = await getAllCriteria(db);
-        const canEdit = req.user.type === "admin" || await userOwnsProject(db, req.user, res.locals.project);
+        const owns = await userOwnsProject(db, req.user, res.locals.project);
+        const canEdit = req.user.type === "admin" || owns;
         const unrestrictedCriteria = criteria.filter(c => {
             // we could do a SQL query but this is easier
             return !c.restricted
@@ -160,14 +161,16 @@ async function startServer() {
             }
         }
 
-        review = await getUserReview(db, req.user, res.locals.project);
-        criteria = (req.user.type === "admin" || req.user.type === "judge") ? criteria : unrestrictedCriteria;
-        if (review) {
-            const xref = await getReviewCriteria(db, review);
-            criteria = criteria.map(c => {
-                const response = xref.find(el => el.criteria_id === c.criteria_id);
-                return { ...c, response };
-            });
+        if (!owns) {
+            review = await getUserReview(db, req.user, res.locals.project);
+            criteria = (req.user.type === "admin" || req.user.type === "judge") ? criteria : unrestrictedCriteria;
+            if (review) {
+                const xref = await getReviewCriteria(db, review);
+                criteria = criteria.map(c => {
+                    const response = xref.find(el => el.criteria_id === c.criteria_id);
+                    return { ...c, response };
+                });
+            }
         }
 
         res.render("project", {

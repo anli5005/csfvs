@@ -42,7 +42,7 @@
     {{/if}}
     <div class="row">
         {{#each votingCriteria}}
-        <div class="col-12 {{#if (isequal type " empty")}}mt-5 mb-3{{else}}col-md-6 col-lg-4 mt-3{{/if}} criteria">
+        <div class="col-12 {{#if (isequal type "empty")}}mt-5 mb-3{{else}}col-md-6 col-lg-4 mt-3{{/if}} criteria">
             {{#if (isequal type "free")}}
             <label for="{{criteria_id}}">
                 <h5 class="{{#if description}}mb-0{{/if}}">{{title}}{{#if required}} <span
