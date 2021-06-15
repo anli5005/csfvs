@@ -4,8 +4,6 @@ export async function getAllUsers(db) {
     return res.rows
 }
 
-// export async function
-
-// export async function updateUserType(db, user, type) {
-
-// }
+export async function changeUserType(db, user, type) {
+    await db.query("UPDATE users SET type = $1 WHERE id = $2", [type, user.user_id]);
+}

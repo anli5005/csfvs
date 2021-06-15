@@ -16,6 +16,7 @@ import { OAuth2Strategy } from 'passport-google-oauth';
 import { getSidebarDetails } from './sidebar.js';
 import { lightColor, validateColor } from './color.js';
 import { getAllUsers } from './users.js';
+import { exportReviews } from './export.js';
 
 config();
 
@@ -212,6 +213,19 @@ async function startServer() {
             sidebar: await getSidebarDetails(db),
             dump: true
         });
+    });
+
+    app.get("/admin/reviews.csv", async (req, res) => {
+        if (!req.user) {
+            return res.redirect("/login");
+        }
+
+        if (req.user.type !== "admin") {
+            return res.sendStatus(403);
+        }
+
+        const csv = await exportReviews(db);
+        res.attachment("reviews.csv").send(csv);
     });
 
     app.use(express.static(join(dir, "../public")));
