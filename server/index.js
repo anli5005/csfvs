@@ -248,6 +248,9 @@ async function startServer() {
 
         let isBad = false;
         const responses = criteria.map(c => {
+            if (c.restricted && (req.user.type !== "admin" && req.user.type !== "judge")) {
+                return;
+            }
             if (c.type === "free") {
                 if (c.required && req.body[c.criteria_id].length === 0) {
                     isBad = true;
