@@ -261,7 +261,7 @@ async function startServer() {
                 }
                 return {criteria_id: c.criteria_id, val};
             }
-        });
+        }).filter(c => c);
         if (isBad) {
             return res.sendStatus(400);
         }
