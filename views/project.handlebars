@@ -31,7 +31,10 @@
         <thead class="bg-white sticky-top">
             <tr>
                 {{#each judgedCriteria}}
+                {{#if (isequal type "empty")}}
+                {{else}}
                 <th scope="col">{{title}}</th>
+                {{/if}}
                 {{/each}}
             </tr>
         </thead>
@@ -39,7 +42,10 @@
             {{#each judged}}
             <tr id="{{review_id}}">
                 {{#each criteria}}
+                {{#if (isequal type "empty")}}
+                {{else}}
                 <td>{{#if val}}{{val}}{{else}}{{description}}{{/if}}</td>
+                {{/if}}
                 {{/each}}
             </tr>
             {{/each}}
@@ -54,7 +60,10 @@
         <thead class="bg-white sticky-top">
             <tr>
                 {{#each otherCriteria}}
+                {{#if (isequal type "empty")}}
+                {{else}}
                 <th scope="col">{{title}}</th>
+                {{/if}}
                 {{/each}}
             </tr>
         </thead>
@@ -62,7 +71,10 @@
             {{#each reviews}}
             <tr id="{{review_id}}">
                 {{#each criteria}}
+                {{#if (isequal type "empty")}}
+                {{else}}
                 <td>{{#if val}}{{val}}{{else}}{{description}}{{/if}}</td>
+                {{/if}}
                 {{/each}}
             </tr>
             {{/each}}
@@ -106,6 +118,10 @@
                 <input {{#if required}}required{{/if}} type="radio" name="{{criteria_id}}" id="{{criteria_id}}-4" value="4" {{#if @root.review}}disabled{{/if}} {{#if (isequal response.val 4)}}checked{{/if}} /><label for="{{criteria_id}}-4">4</label>
                 <input {{#if required}}required{{/if}} type="radio" name="{{criteria_id}}" id="{{criteria_id}}-5" value="5" {{#if @root.review}}disabled{{/if}} {{#if (isequal response.val 5)}}checked{{/if}} /><label for="{{criteria_id}}-5">5</label>
             </div>
+            {{/if}}
+            {{#if (isequal type "empty")}}
+            <h5 class="h4 {{#if description}}mb-0{{/if}}">{{title}}</h5>
+            {{#if description}}<p class="text-muted">{{description}}</p>{{/if}}
             {{/if}}
         </div>
         {{/each}}
