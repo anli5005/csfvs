@@ -12,7 +12,7 @@
     <div class="container-fluid p-0">
         <div class="row g-0">
             {{#with sidebar}}
-            <div class="border-end sidebar col-3">
+            <div class="border-end sidebar col-3" id="sidebar">
                 <div class="list-group list-group-flush border-bottom">
                     <a class="list-group-item list-group-item-action {{#if @root.home}}active{{/if}}" href="/">Home</a></li>    
                     {{#if (isequal @root.user.type "admin")}}
@@ -47,5 +47,6 @@
             </div>
         </div>
     </div>
+    <script src="/sidebar.js"></script>
 </body>
 </html>

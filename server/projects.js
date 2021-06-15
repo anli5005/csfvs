@@ -1,11 +1,11 @@
 
 export async function getAllProjects(db) {
-    const res = await db.query("SELECT p.*, array_agg(u.name ORDER BY u.name) as names, array_agg(u.email ORDER BY u.name) as emails FROM projects as p LEFT JOIN (SELECT u.name, u.email, x.project_id FROM users as u, projects_users_xref as x WHERE u.email = x.email) as u ON p.project_id = u.project_id GROUP BY p.project_id ORDER BY p.session, p.room;")
+    const res = await db.query("SELECT p.*, array_agg(u.name ORDER BY u.name) as names, array_agg(u.email ORDER BY u.name) as emails FROM projects as p LEFT JOIN (SELECT u.name, x.email, x.project_id FROM projects_users_xref as x LEFT JOIN users as u ON x.email = u.email) as u ON p.project_id = u.project_id GROUP BY p.project_id ORDER BY p.session, p.room;")
     return res.rows;
 }
 
 export async function getProjectById(db, id) {
-    const res = await db.query("SELECT p.*, array_agg(u.name ORDER BY u.name) as names, array_agg(u.email ORDER BY u.name) as emails FROM projects as p LEFT JOIN (SELECT u.name, u.email, x.project_id FROM users as u, projects_users_xref as x WHERE u.email = x.email) as u ON p.project_id = u.project_id WHERE p.project_id = $1 GROUP BY p.project_id;", [id]);
+    const res = await db.query("SELECT p.*, array_agg(u.name ORDER BY u.name) as names, array_agg(u.email ORDER BY u.name) as emails FROM projects as p LEFT JOIN (SELECT u.name, x.email, x.project_id FROM projects_users_xref as x LEFT JOIN users as u ON x.email = u.email) as u ON p.project_id = u.project_id WHERE p.project_id = $1 GROUP BY p.project_id;", [id]);
     if (res.rows.length === 1) {
         return res.rows[0];
     }
@@ -22,8 +22,18 @@ export async function userOwnsProject(db, user, project) {
     return res.rows.length > 0;
 }
 
+export async function updateProject(db, project, params) {
+    console.log(params);
+    await db.query(
+        "UPDATE projects SET name = $1, description = $2, image = $3, github = $4, url = $5, color = $6 WHERE project_id = $7;",
+        [params.name, params.description, params.image, params.github, params.url, params.color, project.project_id]
+        );
+}
+
 export function formatAuthors(project) {
     return project.names.map((name, i) =>
-        name ? name : project.emails[i]
-    ).join(", ");
+        name && name.length > 0 ? name : project.emails[i]
+    )
+    .filter(x => x && x.length > 0)
+    .join(", ");
 }

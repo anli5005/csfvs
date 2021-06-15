@@ -1,0 +1,32 @@
+<form class="p-4" method="POST" href="/projects/{{project.project_id}}/edit">
+    <div class="w-100 d-flex mb-3">
+        <a href="/projects/{{project.project_id}}" class="btn btn-secondary">Cancel</a>
+        <span class="flex-grow-1"></span>
+        <button type="submit" class="btn btn-primary">Save</button>
+    </div>
+    <h2>Edit project</h2>
+    <div class="mb-3">
+        <label for="name" class="form-label">Name</label>
+        <input type="text" required class="form-control" id="name" name="name" value="{{project.name}}" />
+    </div>
+    <div class="mb-3">
+        <label for="description" class="form-label">Description</label>
+        <textarea class="form-control" id="description" name="description">{{project.description}}</textarea>
+    </div>
+    <div class="mb-3">
+        <label for="url" class="form-label">Project URL</label>
+        <input type="text" class="form-control" id="url" name="url" value="{{project.git}}" />
+    </div>
+    <div class="mb-3">
+        <label for="github" class="form-label">GitHub URL</label>
+        <input type="url" class="form-control" id="github" name="github" value="{{project.github}}" />
+    </div>
+    <div class="mb-3">
+        <label for="image" class="form-label">Image URL</label>
+        <input type="url" class="form-control" id="image" name="image" value="{{project.image}}" />
+    </div>
+    <div class="mb-3">
+        <label for="color" class="form-label">Color</label>
+        <input type="color" class="form-control form-control-color" id="color" name="color" value="{{color}}" />
+    </div>
+</form> 

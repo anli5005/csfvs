@@ -10,13 +10,14 @@ import { fileURLToPath } from 'node:url';
 import exphbs from 'express-handlebars';
 import passport from 'passport';
 import { findOrCreateUser, registerSerialization } from './auth.js';
-import { formatAuthors, getProjectById, getUserProjects, userOwnsProject } from './projects.js';
+import { formatAuthors, getProjectById, getUserProjects, userOwnsProject, updateProject } from './projects.js';
 import { getAllCriteria, createReview, getUserReview, getReviewCriteria, getProjectReviews, processReviews } from './reviews.js';
 import { OAuth2Strategy } from 'passport-google-oauth';
 import { getSidebarDetails } from './sidebar.js';
 import { lightColor, validateColor } from './color.js';
 import { getAllUsers, changeUserType } from './users.js';
 import { exportReviews } from './export.js';
+import ConnectPGSimple from 'connect-pg-simple';
 
 config();
 
@@ -27,12 +28,13 @@ config();
  * @returns {void}
  */
 
-const { Client } = pg;
+const { Pool } = pg;
 
 const dir = dirname(fileURLToPath(import.meta.url));
+const pgSession = ConnectPGSimple(session);
 
 async function startServer() {
-    const db = new Client();
+    const db = new Pool();
     db.connect();
     registerSerialization(passport, db);
 
@@ -70,7 +72,12 @@ async function startServer() {
     app.set("views", join(dir, "../views"));
     app.set("view engine", "handlebars");
 
-    app.use(session({ secret: "EDWARD CHANGE ME" }));
+    app.use(session({
+        store: new pgSession({pool: db}),
+        secret: "EDWARD CHANGE ME",
+        resave: false,
+        saveUninitialized: false
+    }));
     app.use(passport.initialize());
     app.use(passport.session());
 
@@ -114,22 +121,35 @@ async function startServer() {
         res.redirect('/');
     });
 
+    app.use("/projects/:id", async (req, res, next) => {
+        try {
+            if (!/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(req.params.id)) {
+                return res.sendStatus(404);
+            }
+            res.locals.project = await getProjectById(db, req.params.id);
+            if (!res.locals.project) return res.sendStatus(404);
+            next();
+        } catch (e) {
+            next(e);
+        }
+    });
+
     app.get("/projects/:id", async (req, res) => {
         if (!req.user) {
             return res.redirect("/login");
         }
 
-        const project = getProjectById(db, req.params.id);
         let review, judged, reviews;
         let showReviews = false;
         let criteria = await getAllCriteria(db);
+        const canEdit = req.user.type === "admin" || await userOwnsProject(db, req.user, res.locals.project);
 
-        if (req.user.type === "admin" || await userOwnsProject(db, req.user, await project)) {
+        if (canEdit) {
             showReviews = true;
-            judged = processReviews(await getProjectReviews(db, await project, "judge"), criteria);
-            reviews = processReviews(await getProjectReviews(db, await project, "default"), criteria);
+            judged = processReviews(await getProjectReviews(db, res.locals.project, "judge"), criteria);
+            reviews = processReviews(await getProjectReviews(db, res.locals.project, "default"), criteria);
         } else {
-            review = await getUserReview(db, req.user, await project);
+            review = await getUserReview(db, req.user, res.locals.project);
             if (review) {
                 const xref = await getReviewCriteria(db, review);
                 criteria = criteria.map(c => {
@@ -142,15 +162,66 @@ async function startServer() {
         res.render("project", {
             user: req.user,
             sidebar: await getSidebarDetails(db),
-            project: await project,
-            authors: formatAuthors(await project),
+            project: res.locals.project,
+            authors: formatAuthors(res.locals.project),
             criteria: criteria,
             judged,
             review,
             reviews,
             showReviews,
-            color: validateColor((await project).color) && lightColor((await project).color) 
+            color: validateColor((res.locals.project).color) && lightColor((res.locals.project).color),
+            canEdit
         });
+    });
+
+    app.get("/projects/:id/edit", async (req, res) => {
+        if (!req.user) {
+            return res.redirect("/login");
+        }
+
+        const project = getProjectById(db, req.params.id);
+        const canEdit = req.user.type === "admin" || await userOwnsProject(db, req.user, res.locals.project);
+
+        if (!canEdit) {
+            return res.sendStatus(403);
+        }
+
+        res.render("projectedit", {
+            user: req.user,
+            project: res.locals.project,
+            color: validateColor((res.locals.project).color),
+            layout: "simple"
+        });
+    });
+
+    app.post("/projects/:id/edit", async (req, res) => {
+        if (!req.user) {
+            return res.redirect("/login");
+        }
+
+        const canEdit = req.user.type === "admin" || await userOwnsProject(db, req.user, res.locals.project);
+
+        if (!canEdit) {
+            return res.sendStatus(403);
+        }
+
+        if (typeof req.body.name !== "string") return res.status(400).send("A name is required.");
+        if (typeof req.body.description !== "string" && typeof req.body.description !== "undefined") return res.status(400).send("Description must be a string.");
+        if (typeof req.body.image !== "string" && typeof req.body.image !== "undefined") return res.status(400).send("Image must be a string.");
+        if (typeof req.body.github !== "string" && typeof req.body.github !== "undefined") return res.status(400).send("GitHub must be a string.");
+        if (typeof req.body.url !== "string" && typeof req.body.url !== "undefined") return res.status(400).send("URL must be a string.");
+        if (typeof req.body.color !== "string" && typeof req.body.color !== "undefined") return res.status(400).send("Color must be a string.");
+
+        await updateProject(db, res.locals.project, {
+            name: req.body.name,
+            description: req.body.description,
+            image: req.body.image,
+            github: req.body.github,
+            url: req.body.url,
+            color: validateColor(req.body.color)
+        });
+
+        res.redirect(`/projects/${(res.locals.project).project_id}`);
     });
 
     app.post("/projects/:id/vote", async (req, res) => {
@@ -159,7 +230,6 @@ async function startServer() {
         }
 
         const criteria = await getAllCriteria(db);
-        const project = await getProjectById(db, req.params.id);
         
         if (await userOwnsProject(db, req.user, project)) {
             return res.status(400).send("You can't vote on your own project!");
@@ -174,7 +244,7 @@ async function startServer() {
                 return {criteria_id: c.criteria_id, description: req.body[c.criteria_id]};
             } else if (c.type === "scale") {
                 const val = parseInt(req.body[c.criteria_id]);
-                if (isNaN(val)) return {criteria_id: c.criteria_id};
+                if (isNaN(val) || (val < 1 || val > 5)) return {criteria_id: c.criteria_id};
                 return {criteria_id: c.criteria_id, val};
             }
         });
@@ -208,8 +278,6 @@ async function startServer() {
             return res.sendStatus(403);
         }
 
-        console.log(req.body.action);
-
         const users = await getAllUsers(db);
         const selectedUsers = users.filter(({user_id}) => req.body[`user-${user_id}`]);
 
@@ -221,11 +289,19 @@ async function startServer() {
             for (let user of selectedUsers) {
                 await changeUserType(db, user, "default");
             }
+        } else if (req.body.action === "make-admin") {
+            for (let user of selectedUsers) {
+                await changeUserType(db, user, "admin");
+            }
         } else {
             return res.sendStatus(400);
         }
 
-        res.redirect("/admin/users");
+        if ((req.body.action === "make-judge" || req.body.action === "make-default") && req.body[`user-${req.user.user_id}`]) {
+            res.redirect("/")
+        } else {
+            res.redirect("/admin/users");
+        }
     });
 
     app.get("/admin/dump", async (req, res) => {

@@ -10,6 +10,7 @@
         "start": "node server/index.js"
     },
     "dependencies": {
+        "connect-pg-simple": "^6.2.1",
         "csv-string": "^4.0.1",
         "dotenv": "^8.2.0",
         "express": "^4.17.1",

@@ -18,6 +18,8 @@
         <p class="lead">{{project.description}}</p>
         {{#if project.url}}<div><i class="bi bi-link"></i> <a class="text-decoration-none" href="{{project.url}}" target="_blank">{{project.url}} <i class="bi bi-box-arrow-up-right"></i></a></div>{{/if}}
         {{#if project.github}}<div><i class="bi bi-github"></i> <a class="text-decoration-none" href="{{project.github}}" target="_blank">{{project.github}} <i class="bi bi-box-arrow-up-right"></i></a></div>{{/if}}
+        {{#if canEdit}}<div class="mt-3"><a href="/projects/{{project.project_id}}/edit" class="btn btn-outline-primary">Edit
+                Project Details</a></div>{{/if}}
     </div>
     {{#if project.image}}<div class="rounded project-image"><img src="{{project.image}}" /></div>{{/if}}
 </div>
@@ -85,7 +87,7 @@
     {{/if}}
     <div class="row">
         {{#each criteria}}
-        <div class="col-4 criteria mt-3">
+        <div class="col-12 col-md-6 col-lg-4 criteria mt-3">
             {{#if (isequal type "free")}}
             <label for="{{criteria_id}}">
                 <h5 class="{{#if description}}mb-0{{/if}}">{{title}}</h5>
