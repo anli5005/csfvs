@@ -170,6 +170,7 @@ async function startServer() {
             sidebar: await getSidebarDetails(db),
             project: res.locals.project,
             authors: formatAuthors(res.locals.project),
+            emails: res.locals.project.emails.join(", "),
             votingCriteria: criteria,
             judgedCriteria, 
             otherCriteria: unrestrictedCriteria,
@@ -187,7 +188,6 @@ async function startServer() {
             return res.redirect("/login");
         }
 
-        const project = getProjectById(db, req.params.id);
         const canEdit = req.user.type === "admin" || await userOwnsProject(db, req.user, res.locals.project);
 
         if (!canEdit) {
@@ -231,7 +231,7 @@ async function startServer() {
             platform: req.body.platform
         });
 
-        res.redirect(`/projects/${(res.locals.project).project_id}`);
+        res.redirect(`/projects/${res.locals.project.project_id}`);
     });
 
     app.post("/projects/:id/vote", async (req, res) => {
