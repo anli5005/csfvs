@@ -23,7 +23,6 @@ export async function userOwnsProject(db, user, project) {
 }
 
 export async function updateProject(db, project, params) {
-    console.log(params);
     await db.query(
         "UPDATE projects SET name = $1, description = $2, image = $3, github = $4, url = $5, color = $6 WHERE project_id = $7;",
         [params.name, params.description, params.image, params.github, params.url, params.color, project.project_id]
