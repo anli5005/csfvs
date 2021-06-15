@@ -1,6 +1,6 @@
 
 export async function getAllUsers(db) {
-    const res = await db.query("SELECT * FROM users;");
+    const res = await db.query("SELECT * FROM users ORDER BY email;");
     return res.rows
 }
 

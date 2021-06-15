@@ -1,11 +1,12 @@
 <form class="p-4" method="POST" href="/">
     <h2>Manage users</h2>
-    <div class="py-2 sticky-top bg-white">
-        <select class="form-select" name="action">
-            <option>Action</option>
+    <div class="py-2 sticky-top bg-white d-flex">
+        <select class="form-select me-2" name="action" value="" required>
+            <option value="">Action</option>
             <option value="make-default">Make default</option>
             <option value="make-judge">Make judge</option>
         </select>
+        <button type="submit" class="btn btn-primary">Submit</button>
     </div>
     <table class="table">
         <thead class="bg-white">

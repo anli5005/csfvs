@@ -15,7 +15,7 @@ import { getAllCriteria, createReview, getUserReview, getReviewCriteria, getProj
 import { OAuth2Strategy } from 'passport-google-oauth';
 import { getSidebarDetails } from './sidebar.js';
 import { lightColor, validateColor } from './color.js';
-import { getAllUsers } from './users.js';
+import { getAllUsers, updateUserType } from './users.js';
 import { exportReviews } from './export.js';
 
 config();
@@ -197,6 +197,35 @@ async function startServer() {
             userManagement: true,
             users: await getAllUsers(db)
         });
+    });
+
+    app.post("/admin/users", async (req, res) => {
+        if (!req.user) {
+            return res.redirect("/login");
+        }
+
+        if (req.user.type !== "admin") {
+            return res.sendStatus(403);
+        }
+
+        console.log(req.body.action);
+
+        const users = await getAllUsers(db);
+        const selectedUsers = users.filter(({user_id}) => req.body[`user-${user_id}`]);
+
+        if (req.body.action === "make-judge") {
+            for (let user of selectedUsers) {
+                await updateUserType(db, user, "judge");
+            }
+        } else if (req.body.action === "make-default") {
+            for (let user of selectedUsers) {
+                await updateUserType(db, user, "default");
+            }
+        } else {
+            return res.sendStatus(400);
+        }
+
+        res.redirect("/admin/users");
     });
 
     app.get("/admin/dump", async (req, res) => {
