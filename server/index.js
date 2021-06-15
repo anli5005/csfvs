@@ -155,6 +155,7 @@ async function startServer() {
             reviews = processReviews(await getProjectReviews(db, res.locals.project, "default"), unrestrictedCriteria);
         } else {
             review = await getUserReview(db, req.user, res.locals.project);
+            criteria = (req.user.type === "admin" || req.user.type === "judge") ? criteria : unrestrictedCriteria;
             if (review) {
                 const xref = await getReviewCriteria(db, review);
                 criteria = criteria.map(c => {
@@ -169,7 +170,7 @@ async function startServer() {
             sidebar: await getSidebarDetails(db),
             project: res.locals.project,
             authors: formatAuthors(res.locals.project),
-            votingCriteria: (req.user.type === "admin" || req.user.type === "judge") ? criteria : unrestrictedCriteria,
+            votingCriteria: criteria,
             judgedCriteria, 
             otherCriteria: unrestrictedCriteria,
             judged,
