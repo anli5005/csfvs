@@ -28,59 +28,63 @@
 {{#if showReviews}}
 <div class="p-4">
     <h3>Judge reviews</h3>
-    <table class="table">
-        <thead class="bg-white sticky-top">
-            <tr>
-                {{#each judgedCriteria}}
-                {{#if (isequal type "empty")}}
-                {{else}}
-                <th scope="col">{{title}}</th>
-                {{/if}}
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    {{#each judgedCriteria}}
+                    {{#if (isequal type "empty")}}
+                    {{else}}
+                    <th scope="col">{{title}}</th>
+                    {{/if}}
+                    {{/each}}
+                </tr>
+            </thead>
+            <tbody>
+                {{#each judged}}
+                <tr id="{{review_id}}">
+                    {{#each criteria}}
+                    {{#if (isequal type "empty")}}
+                    {{else}}
+                    <td>{{#if val}}{{val}}{{else}}{{description}}{{/if}}</td>
+                    {{/if}}
+                    {{/each}}
+                </tr>
                 {{/each}}
-            </tr>
-        </thead>
-        <tbody>
-            {{#each judged}}
-            <tr id="{{review_id}}">
-                {{#each criteria}}
-                {{#if (isequal type "empty")}}
-                {{else}}
-                <td>{{#if val}}{{val}}{{else}}{{description}}{{/if}}</td>
-                {{/if}}
-                {{/each}}
-            </tr>
-            {{/each}}
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+    </div>
     {{#if judged}}
     {{else}}
     <p>There are no reviews from the judges yet. Check back later!</p>
     {{/if}}
     <h3 class="mt-5">Other reviews</h3>
-    <table class="table">
-        <thead class="bg-white sticky-top">
-            <tr>
-                {{#each otherCriteria}}
-                {{#if (isequal type "empty")}}
-                {{else}}
-                <th scope="col">{{title}}</th>
-                {{/if}}
+    <div class="table-responsive w-100">
+        <table class="table">
+            <thead>
+                <tr>
+                    {{#each otherCriteria}}
+                    {{#if (isequal type "empty")}}
+                    {{else}}
+                    <th scope="col">{{title}}</th>
+                    {{/if}}
+                    {{/each}}
+                </tr>
+            </thead>
+            <tbody>
+                {{#each reviews}}
+                <tr id="{{review_id}}">
+                    {{#each criteria}}
+                    {{#if (isequal type "empty")}}
+                    {{else}}
+                    <td>{{#if val}}{{val}}{{else}}{{description}}{{/if}}</td>
+                    {{/if}}
+                    {{/each}}
+                </tr>
                 {{/each}}
-            </tr>
-        </thead>
-        <tbody>
-            {{#each reviews}}
-            <tr id="{{review_id}}">
-                {{#each criteria}}
-                {{#if (isequal type "empty")}}
-                {{else}}
-                <td>{{#if val}}{{val}}{{else}}{{description}}{{/if}}</td>
-                {{/if}}
-                {{/each}}
-            </tr>
-            {{/each}}
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+    </div>
     {{#if reviews}}
     {{else}}
     <p>There are no reviews yet. Check back later!</p>
