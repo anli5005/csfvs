@@ -1,3 +1,6 @@
+import fs from "fs";
+const judges = JSON.parse(fs.readFileSync("judges.json", "utf8"));
+
 /**
  * @typedef Profile
  * @property {string} outlook_id
@@ -15,7 +18,13 @@ export async function findOrCreateUser(db, profile) {
     if (res.rows.length === 1) {
         return res.rows[0];
     } else if (res.rows.length === 0) {
-        const insertRes = await db.query("INSERT INTO users (outlook_id, email, name, type) VALUES ($1, $2, $3, 'default') RETURNING user_id",  [profile.outlook_id, profile.email, profile.name]);
+        const type = judges.includes(profile.email) ? "judge" : "default";
+
+        const insertRes = await db.query(
+            "INSERT INTO users (outlook_id, email, name, type) VALUES ($1, $2, $3, $4) RETURNING user_id",
+            [profile.outlook_id, profile.email, profile.name, type]
+        );
+
         // We'll deal with the welcome screen later
         return insertRes.rows[0];
     } else {
