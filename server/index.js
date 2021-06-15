@@ -215,11 +215,11 @@ async function startServer() {
 
         if (req.body.action === "make-judge") {
             for (let user of selectedUsers) {
-                await updateUserType(db, user, "judge");
+                await changeUserType(db, user, "judge");
             }
         } else if (req.body.action === "make-default") {
             for (let user of selectedUsers) {
-                await updateUserType(db, user, "default");
+                await changeUserType(db, user, "default");
             }
         } else {
             return res.sendStatus(400);
