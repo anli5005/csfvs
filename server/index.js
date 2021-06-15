@@ -189,7 +189,8 @@ async function startServer() {
             color: validateColor((res.locals.project).color) && lightColor((res.locals.project).color),
             canEdit,
             lock: process.env.LOCK_VOTING,
-            lockReviews
+            lockReviews,
+            owns
         });
     });
 
