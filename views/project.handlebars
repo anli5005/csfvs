@@ -25,10 +25,10 @@
     {{#if project.image}}<div class="rounded project-image"><img src="{{project.image}}" /></div>{{/if}}
 </div>
 <hr class="mx-4 my-2" />
+{{#if review}}
 {{#if lock}}
 <div class="p-4">Reviews are currently disabled.</div>
 {{else}}
-{{#if review}}
 <div class="p-4">
 {{else}}
 <form id="vote-form" class="p-4" action="/projects/{{project.project_id}}/vote" method="POST">
