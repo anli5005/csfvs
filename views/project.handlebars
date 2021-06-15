@@ -25,6 +25,77 @@
     {{#if project.image}}<div class="rounded project-image"><img src="{{project.image}}" /></div>{{/if}}
 </div>
 <hr class="mx-4 my-2" />
+{{#if lock}}
+<div class="p-4">Reviews are currently disabled.</div>
+{{else}}
+{{#if review}}
+<div class="p-4">
+{{else}}
+<form id="vote-form" class="p-4" action="/projects/{{project.project_id}}/vote" method="POST">
+{{/if}}
+    {{#if review}}
+    <h3 class="mb-0">Your review</h3>
+    <p>Thanks for your feedback!</p>
+    {{else}}
+    <h3>Send feedback</h3>
+    <p class="text-danger">* Required</p>
+    {{/if}}
+    <div class="row">
+        {{#each votingCriteria}}
+        <div class="col-12 {{#if (isequal type " empty")}}mt-5 mb-3{{else}}col-md-6 col-lg-4 mt-3{{/if}} criteria">
+            {{#if (isequal type "free")}}
+            <label for="{{criteria_id}}">
+                <h5 class="{{#if description}}mb-0{{/if}}">{{title}}{{#if required}} <span
+                        class="text-danger">*</span>{{/if}}</h5>
+                {{#if description}}<p class="text-muted">{{description}}</p>{{/if}}
+            </label>
+            <textarea {{#if required}}required{{/if}} class="form-control free-response" name="{{criteria_id}}"
+                id="{{criteria_id}}" {{#if @root.review}}disabled{{/if}}>{{response.description}}</textarea>
+            {{/if}}
+            {{#if (isequal type "scale")}}
+            <h5 class="{{#if description}}mb-0{{/if}}">{{title}}{{#if required}} <span
+                    class="text-danger">*</span>{{/if}}</h5>
+            {{#if description}}<p class="text-muted">{{description}}</p>{{/if}}
+            <div class="scale">
+                <input {{#if required}}required{{/if}} type="radio" name="{{criteria_id}}" id="{{criteria_id}}-1"
+                    value="1" {{#if @root.review}}disabled{{/if}} {{#if (isequal response.val
+                    1)}}checked{{/if}} /><label for="{{criteria_id}}-1">1</label>
+                <input {{#if required}}required{{/if}} type="radio" name="{{criteria_id}}" id="{{criteria_id}}-2"
+                    value="2" {{#if @root.review}}disabled{{/if}} {{#if (isequal response.val
+                    2)}}checked{{/if}} /><label for="{{criteria_id}}-2">2</label>
+                <input {{#if required}}required{{/if}} type="radio" name="{{criteria_id}}" id="{{criteria_id}}-3"
+                    value="3" {{#if @root.review}}disabled{{/if}} {{#if (isequal response.val
+                    3)}}checked{{/if}} /><label for="{{criteria_id}}-3">3</label>
+                <input {{#if required}}required{{/if}} type="radio" name="{{criteria_id}}" id="{{criteria_id}}-4"
+                    value="4" {{#if @root.review}}disabled{{/if}} {{#if (isequal response.val
+                    4)}}checked{{/if}} /><label for="{{criteria_id}}-4">4</label>
+                <input {{#if required}}required{{/if}} type="radio" name="{{criteria_id}}" id="{{criteria_id}}-5"
+                    value="5" {{#if @root.review}}disabled{{/if}} {{#if (isequal response.val
+                    5)}}checked{{/if}} /><label for="{{criteria_id}}-5">5</label>
+            </div>
+            {{/if}}
+            {{#if (isequal type "empty")}}
+            <h5 class="h4 mb-0">{{title}}</h5>
+            {{#if description}}<p class="text-muted mb-0">{{description}}</p>{{/if}}
+            {{/if}}
+        </div>
+        {{/each}}
+    </div>
+    {{#if review}}
+    {{else}}
+    <button class="my-3 btn btn-primary" type="submit" id="submit-vote">Submit</button>
+    <script src="/voting.js"></script>
+    {{/if}}
+{{#if review}}
+</div>
+{{else}}
+</form>
+{{/if}}
+{{/if}}
+<hr class="mx-4 my-2" />
+{{#if lockReviews}}
+<div class="p-4">Viewing reviews is currently disabled.</div>
+{{/if}}
 {{#if showReviews}}
 <div class="p-4">
     <h3>Judge reviews</h3>
@@ -90,56 +161,5 @@
     <p>There are no reviews yet. Check back later!</p>
     {{/if}}
 </div>
-{{else}}
-{{#if review}}
-<div class="p-4">
-{{else}}
-<form id="vote-form" class="p-4" action="/projects/{{project.project_id}}/vote" method="POST">
-{{/if}}
-    {{#if review}}
-    <h3 class="mb-0">Your review</h3>
-    <p>Thanks for your feedback!</p>
-    {{else}}
-    <h3>Send feedback</h3>
-    <p class="text-danger">* Required</p>
-    {{/if}}
-    <div class="row">
-        {{#each votingCriteria}}
-        <div class="col-12 {{#if (isequal type "empty")}}mt-5 mb-3{{else}}col-md-6 col-lg-4 mt-3{{/if}} criteria">
-            {{#if (isequal type "free")}}
-            <label for="{{criteria_id}}">
-                <h5 class="{{#if description}}mb-0{{/if}}">{{title}}{{#if required}} <span class="text-danger">*</span>{{/if}}</h5>
-                {{#if description}}<p class="text-muted">{{description}}</p>{{/if}}
-            </label>
-            <textarea {{#if required}}required{{/if}} class="form-control free-response" name="{{criteria_id}}" id="{{criteria_id}}" {{#if @root.review}}disabled{{/if}}>{{response.description}}</textarea>
-            {{/if}}
-            {{#if (isequal type "scale")}}
-            <h5 class="{{#if description}}mb-0{{/if}}">{{title}}{{#if required}} <span class="text-danger">*</span>{{/if}}</h5>
-            {{#if description}}<p class="text-muted">{{description}}</p>{{/if}}
-            <div class="scale">
-                <input {{#if required}}required{{/if}} type="radio" name="{{criteria_id}}" id="{{criteria_id}}-1" value="1" {{#if @root.review}}disabled{{/if}} {{#if (isequal response.val 1)}}checked{{/if}} /><label for="{{criteria_id}}-1">1</label>
-                <input {{#if required}}required{{/if}} type="radio" name="{{criteria_id}}" id="{{criteria_id}}-2" value="2" {{#if @root.review}}disabled{{/if}} {{#if (isequal response.val 2)}}checked{{/if}} /><label for="{{criteria_id}}-2">2</label>
-                <input {{#if required}}required{{/if}} type="radio" name="{{criteria_id}}" id="{{criteria_id}}-3" value="3" {{#if @root.review}}disabled{{/if}} {{#if (isequal response.val 3)}}checked{{/if}} /><label for="{{criteria_id}}-3">3</label>
-                <input {{#if required}}required{{/if}} type="radio" name="{{criteria_id}}" id="{{criteria_id}}-4" value="4" {{#if @root.review}}disabled{{/if}} {{#if (isequal response.val 4)}}checked{{/if}} /><label for="{{criteria_id}}-4">4</label>
-                <input {{#if required}}required{{/if}} type="radio" name="{{criteria_id}}" id="{{criteria_id}}-5" value="5" {{#if @root.review}}disabled{{/if}} {{#if (isequal response.val 5)}}checked{{/if}} /><label for="{{criteria_id}}-5">5</label>
-            </div>
-            {{/if}}
-            {{#if (isequal type "empty")}}
-            <h5 class="h4 mb-0">{{title}}</h5>
-            {{#if description}}<p class="text-muted mb-0">{{description}}</p>{{/if}}
-            {{/if}}
-        </div>
-        {{/each}}
-    </div>
-    {{#if review}}
-    {{else}}
-    <button class="my-3 btn btn-primary" type="submit" id="submit-vote">Submit</button>
-    <script src="/voting.js"></script>
-    {{/if}}
-{{#if review}}
-</div>
-{{else}}
-</form>
-{{/if}}
 {{/if}}
 <script src="/projects.js"></script>

@@ -141,6 +141,7 @@ async function startServer() {
 
         let review, judged, reviews;
         let showReviews = false;
+        let lockReviews = false;
         let criteria = await getAllCriteria(db);
         const canEdit = req.user.type === "admin" || await userOwnsProject(db, req.user, res.locals.project);
         const unrestrictedCriteria = criteria.filter(c => {
@@ -150,19 +151,23 @@ async function startServer() {
         const judgedCriteria = req.user.type === "admin" ? criteria : unrestrictedCriteria;
 
         if (canEdit) {
-            showReviews = true;
-            judged = processReviews(await getProjectReviews(db, res.locals.project, "judge"), judgedCriteria);
-            reviews = processReviews(await getProjectReviews(db, res.locals.project, "default"), unrestrictedCriteria);
-        } else {
-            review = await getUserReview(db, req.user, res.locals.project);
-            criteria = (req.user.type === "admin" || req.user.type === "judge") ? criteria : unrestrictedCriteria;
-            if (review) {
-                const xref = await getReviewCriteria(db, review);
-                criteria = criteria.map(c => {
-                    const response = xref.find(el => el.criteria_id === c.criteria_id);
-                    return { ...c, response };
-                });
+            if (req.user.type === "admin" || !process.env.LOCK_VIEWING) {
+                showReviews = true;
+                judged = processReviews(await getProjectReviews(db, res.locals.project, "judge"), judgedCriteria);
+                reviews = processReviews(await getProjectReviews(db, res.locals.project, "default"), unrestrictedCriteria);
+            } else {
+                lockReviews = true;
             }
+        }
+
+        review = await getUserReview(db, req.user, res.locals.project);
+        criteria = (req.user.type === "admin" || req.user.type === "judge") ? criteria : unrestrictedCriteria;
+        if (review) {
+            const xref = await getReviewCriteria(db, review);
+            criteria = criteria.map(c => {
+                const response = xref.find(el => el.criteria_id === c.criteria_id);
+                return { ...c, response };
+            });
         }
 
         res.render("project", {
@@ -179,7 +184,9 @@ async function startServer() {
             reviews,
             showReviews,
             color: validateColor((res.locals.project).color) && lightColor((res.locals.project).color),
-            canEdit
+            canEdit,
+            lock: process.env.LOCK_VOTING,
+            lockReviews
         });
     });
 
@@ -237,6 +244,10 @@ async function startServer() {
     app.post("/projects/:id/vote", async (req, res) => {
         if (!req.user) {
             return res.redirect("/login");
+        }
+
+        if (process.env.LOCK_VOTING) {
+            return res.status(400).send("It is not time to vote yet");
         }
 
         const criteria = await getAllCriteria(db);
