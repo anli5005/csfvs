@@ -316,7 +316,8 @@ async function startServer() {
         res.render("dump", {
             user: req.user,
             sidebar: await getSidebarDetails(db),
-            dump: true
+            dump: true,
+            random: Math.random().toString()
         });
     });
 
