@@ -10,10 +10,11 @@
 <div class="p-4 d-flex w-100">
     <div class="flex-grow-1">
         <h2 class="display-4">{{project.name}}</h2>
-        <div class="mb-2" style="opacity: 0.7;">
+        <div class="mb-2 project-details" style="opacity: 0.7;">
             {{#if authors}}<span class="me-3"><i class="bi bi-people"></i> {{authors}}</span>{{/if}}
             <span class="me-3"><i class="bi bi-clock"></i> {{#if project.session}}Session {{project.session}}{{else}}No Session{{/if}}, {{#if
                 project.room}}Room {{project.room}}{{else}}No Room{{/if}}</span>
+            {{#if project.platform}}<span class="me-3"><i class="bi bi-code-slash"></i> {{project.platform}}</span>{{/if}}
         </div>
         <p class="lead">{{project.description}}</p>
         {{#if project.url}}<div><i class="bi bi-link"></i> <a class="text-decoration-none" href="{{project.url}}" target="_blank">{{project.url}} <i class="bi bi-box-arrow-up-right"></i></a></div>{{/if}}

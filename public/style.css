@@ -58,6 +58,7 @@
     width: 256px;
     overflow: hidden;
     max-height: 512px;
+    margin-left: 16px;
 }
 
 .project-image img {
@@ -66,4 +67,8 @@
 
 .btn:disabled {
     cursor: not-allowed;
+}
+
+.project-details > span {
+    display: inline-block;
 }

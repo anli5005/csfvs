@@ -14,6 +14,10 @@
         <textarea class="form-control" id="description" name="description">{{project.description}}</textarea>
     </div>
     <div class="mb-3">
+        <label for="platform" class="form-label">Platform <span class="text-muted">(Language, Frameworks)</span></label>
+        <input type="text" class="form-control" id="platform" name="platform" value="{{project.platform}}" />
+    </div>
+    <div class="mb-3">
         <label for="url" class="form-label">Project URL</label>
         <input type="text" class="form-control" id="url" name="url" value="{{project.url}}" />
     </div>

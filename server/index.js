@@ -219,6 +219,7 @@ async function startServer() {
         if (typeof req.body.github !== "string" && typeof req.body.github !== "undefined") return res.status(400).send("GitHub must be a string.");
         if (typeof req.body.url !== "string" && typeof req.body.url !== "undefined") return res.status(400).send("URL must be a string.");
         if (typeof req.body.color !== "string" && typeof req.body.color !== "undefined") return res.status(400).send("Color must be a string.");
+        if (typeof req.body.platform !== "string" && typeof req.body.platform !== "undefined") return res.status(400).send("Platform must be a string");
 
         await updateProject(db, res.locals.project, {
             name: req.body.name,
@@ -226,7 +227,8 @@ async function startServer() {
             image: req.body.image,
             github: req.body.github,
             url: req.body.url,
-            color: validateColor(req.body.color)
+            color: validateColor(req.body.color),
+            platform: req.body.platform
         });
 
         res.redirect(`/projects/${(res.locals.project).project_id}`);
