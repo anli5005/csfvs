@@ -357,6 +357,22 @@ async function startServer() {
         res.attachment("reviews.csv").send(csv);
     });
 
+    app.get("/admin/criteria", async (req, res) => {
+        if (!req.user) {
+            return res.redirect("/login");
+        }
+
+        if (req.user.type !== "admin") {
+            return res.sendStatus(403);
+        }
+
+        res.render("criteria", {
+            user: req.user,
+            sidebar: await getSidebarDetails(db, req.user),
+            criteria: await getAllCriteria(db)
+        });
+    });
+
     app.use(express.static(join(dir, "../public")));
 
     const port = process.env.PORT ? parseInt(process.env.PORT) : 3000;

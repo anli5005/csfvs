@@ -22,6 +22,7 @@
                     </div>
                     <a class="list-group-item list-group-item-action {{#if @root.userManagement}}active{{/if}}" href="/admin/users">Manage users</a>
                     <a class="list-group-item list-group-item-action {{#if @root.dump}}active{{/if}}" href="/admin/dump">Dump reviews</a>
+                    <a class="list-group-item list-group-item-action {{#if @root.criteria}}active{{/if}}" href="/admin/criteria">Preview form</a>
                     {{/if}}
                     {{#each projects}}
                     <div class="sticky-top list-group-item list-group-item-secondary text-uppercase fw-bold py-1" style="font-size: 0.75rem;">

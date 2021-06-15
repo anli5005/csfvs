@@ -1,0 +1,47 @@
+<div class="p-4">
+    <h2>Preview form</h2>
+    <p>This page provides a preview of how the feedback form will look on each project.</p>
+    <p class="text-primary"><i class="bi bi-lock" aria-label="Judges Only"></i> Judges Only</p>
+    <p class="text-danger">* Required</p>
+    <div class="row">
+        {{#each criteria}}
+        <div class="col-12 {{#if (isequal type "empty")}}mt-5 mb-3{{else}}col-md-6 col-lg-4 mt-3{{/if}} criteria">
+            {{#if (isequal type "free")}}
+            <label for="{{criteria_id}}">
+                <h5 class="{{#if description}}mb-0{{/if}}">{{title}}{{#if restricted}} <i class="text-primary bi bi-lock" aria-label="Judges Only"></i>{{/if}}{{#if required}} <span
+                        class="text-danger">*</span>{{/if}}</h5>
+                {{#if description}}<p class="text-muted">{{description}}</p>{{/if}}
+            </label>
+            <textarea {{#if required}}required{{/if}} class="form-control free-response" name="{{criteria_id}}"
+                id="{{criteria_id}}" {{#if @root.review}}disabled{{/if}}>{{response.description}}</textarea>
+            {{/if}}
+            {{#if (isequal type "scale")}}
+            <h5 class="{{#if description}}mb-0{{/if}}">{{title}}{{#if restricted}} <i class="text-primary bi bi-lock" aria-label="Judges Only"></i>{{/if}}{{#if required}} <span class="text-danger">*</span>{{/if}}
+            </h5>
+            {{#if description}}<p class="text-muted">{{description}}</p>{{/if}}
+            <div class="scale">
+                <input {{#if required}}required{{/if}} type="radio" name="{{criteria_id}}" id="{{criteria_id}}-1" value="1"
+                    {{#if @root.review}}disabled{{/if}} {{#if (isequal response.val 1)}}checked{{/if}} /><label
+                    for="{{criteria_id}}-1">1</label>
+                <input {{#if required}}required{{/if}} type="radio" name="{{criteria_id}}" id="{{criteria_id}}-2" value="2"
+                    {{#if @root.review}}disabled{{/if}} {{#if (isequal response.val 2)}}checked{{/if}} /><label
+                    for="{{criteria_id}}-2">2</label>
+                <input {{#if required}}required{{/if}} type="radio" name="{{criteria_id}}" id="{{criteria_id}}-3" value="3"
+                    {{#if @root.review}}disabled{{/if}} {{#if (isequal response.val 3)}}checked{{/if}} /><label
+                    for="{{criteria_id}}-3">3</label>
+                <input {{#if required}}required{{/if}} type="radio" name="{{criteria_id}}" id="{{criteria_id}}-4" value="4"
+                    {{#if @root.review}}disabled{{/if}} {{#if (isequal response.val 4)}}checked{{/if}} /><label
+                    for="{{criteria_id}}-4">4</label>
+                <input {{#if required}}required{{/if}} type="radio" name="{{criteria_id}}" id="{{criteria_id}}-5" value="5"
+                    {{#if @root.review}}disabled{{/if}} {{#if (isequal response.val 5)}}checked{{/if}} /><label
+                    for="{{criteria_id}}-5">5</label>
+            </div>
+            {{/if}}
+            {{#if (isequal type "empty")}}
+            <h5 class="h4 mb-0">{{title}}{{#if restricted}} <i class="text-primary bi bi-lock" aria-label="Judges Only"></i>{{/if}}</h5>
+            {{#if description}}<p class="text-muted mb-0">{{description}}</p>{{/if}}
+            {{/if}}
+        </div>
+        {{/each}}
+    </div>
+</div>
