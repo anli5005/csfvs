@@ -5,5 +5,5 @@ export async function getAllUsers(db) {
 }
 
 export async function changeUserType(db, user, type) {
-    await db.query("UPDATE users SET type = $1 WHERE id = $2", [type, user.user_id]);
+    await db.query("UPDATE users SET type = $1 WHERE user_id = $2", [type, user.user_id]);
 }
