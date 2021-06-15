@@ -13,13 +13,19 @@ export async function getSidebarDetails(db, user) {
             reviewCounts[project_id] = {all, judge};
         });
     }
-
+    
+    let assigned = new Set();
+    (await getUserAssigned(db, user)).forEach(({project_id}) => {
+        assigned.add(project_id);
+    });
+    
     return {
         projects: projects.map(project => {
             return {
                 ...project,
                 authors: formatAuthors(project),
                 reviewed: reviewed.has(project.project_id),
+                assigned: assigned.has(project.project_id),
                 reviewCount: (user.type === "judge" || user.type === "admin") && (reviewCounts[project.project_id] || {all: 0, judge: 0})
             };
         }).reduce((groups, project) => {
@@ -40,7 +46,7 @@ export async function getUserReviews(db, user) {
 }
 
 export async function getUserAssigned(db, user) {
-    const res = await db.query("SELECT project_id FROM assigned WHERE email = $1;", [user.email]);
+    const res = await db.query("SELECT project_id FROM assignments WHERE email = $1;", [user.email]);
     return res.rows;
 }
 

@@ -257,7 +257,7 @@ async function startServer() {
 
         await deleteReview(db, req.params.id);
 
-        res.redirect(`/projects/${res.locals.project.project_id}`);
+        res.sendStatus(200);
     });
 
     app.post("/projects/:id/vote", async (req, res) => {

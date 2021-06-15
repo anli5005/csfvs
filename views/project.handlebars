@@ -102,7 +102,7 @@
     <div class="table-responsive w-100">
         <table class="table">
             <thead>
-                <tr>
+                <tr class="review-header">
                     {{#each judgedCriteria}}
                     {{#if (isequal type "empty")}}
                     {{else}}
@@ -113,7 +113,7 @@
             </thead>
             <tbody>
                 {{#each judged}}
-                <tr id="{{review_id}}">
+                <tr class="review-row" id="{{review_id}}">
                     {{#each criteria}}
                     {{#if (isequal type "empty")}}
                     {{else}}
@@ -133,7 +133,7 @@
     <div class="table-responsive w-100">
         <table class="table">
             <thead>
-                <tr>
+                <tr class="review-header">
                     {{#each otherCriteria}}
                     {{#if (isequal type "empty")}}
                     {{else}}
@@ -144,7 +144,7 @@
             </thead>
             <tbody>
                 {{#each reviews}}
-                <tr id="{{review_id}}">
+                <tr class="review-row" id="{{review_id}}">
                     {{#each criteria}}
                     {{#if (isequal type "empty")}}
                     {{else}}
@@ -163,3 +163,6 @@
 </div>
 {{/if}}
 <script src="/projects.js"></script>
+{{#if (isequal user.type "admin")}}
+<script src="/deletereviews.js"></script>
+{{/if}}
