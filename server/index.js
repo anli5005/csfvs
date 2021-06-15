@@ -11,7 +11,7 @@ import exphbs from 'express-handlebars';
 import passport from 'passport';
 import { findOrCreateUser, registerSerialization } from './auth.js';
 import { formatAuthors, getProjectById, getUserProjects, userOwnsProject, updateProject } from './projects.js';
-import { getAllCriteria, createReview, getUserReview, getReviewCriteria, getProjectReviews, processReviews } from './reviews.js';
+import { getAllCriteria, createReview, getUserReview, getReviewCriteria, getProjectReviews, processReviews, deleteReview } from './reviews.js';
 import { OAuth2Strategy } from 'passport-google-oauth';
 import { getSidebarDetails } from './sidebar.js';
 import { lightColor, validateColor } from './color.js';
@@ -65,7 +65,8 @@ async function startServer() {
 
     app.engine("handlebars", exphbs({
         helpers: {
-            isequal(a, b) { return a === b; }
+            isequal(a, b) { return a === b; },
+            or(a, b) { return a || b; }
         }
     }));
     app.use(express.urlencoded({extended: false}));
@@ -208,7 +209,7 @@ async function startServer() {
         res.render("projectedit", {
             user: req.user,
             project: res.locals.project,
-            color: validateColor((res.locals.project).color),
+            color: validateColor((res.locals.project).color) || "#FFFFFF",
             layout: "simple"
         });
     });
@@ -241,6 +242,20 @@ async function startServer() {
             color: validateColor(req.body.color),
             platform: req.body.platform
         });
+
+        res.redirect(`/projects/${res.locals.project.project_id}`);
+    });
+
+    app.delete("/reviews/:id", async (req, res) => {
+        if (!req.user) {
+            return res.sendStatus(401);
+        }
+
+        if (req.user.type !== "admin") {
+            return res.sendStatus(403);
+        }
+
+        await deleteReview(db, req.params.id);
 
         res.redirect(`/projects/${res.locals.project.project_id}`);
     });

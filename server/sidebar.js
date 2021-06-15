@@ -39,6 +39,11 @@ export async function getUserReviews(db, user) {
     return res.rows;
 }
 
+export async function getUserAssigned(db, user) {
+    const res = await db.query("SELECT project_id FROM assigned WHERE email = $1;", [user.email]);
+    return res.rows;
+}
+
 export async function getReviewCounts(db) {
     const res = await db.query("SELECT r.project_id, COUNT(r.review_id) as all, SUM(CAST((u.type='judge' OR u.type='admin') AS integer)) as judge FROM reviews as r, users as u WHERE r.user_id = u.user_id GROUP BY r.project_id;");
     return res.rows;

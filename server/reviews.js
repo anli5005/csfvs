@@ -22,6 +22,10 @@ export async function createReview(db, user, project, responses) {
     }
 }
 
+export async function deleteReview(db, response_id) {
+    await db.query("DELETE FROM reviews WHERE review_id = $1;", [response_id]);
+}
+
 export async function getUserReview(db, user, project) {
     const res = await db.query("SELECT * FROM reviews WHERE user_id = $1 AND project_id = $2;", [user.user_id, project.project_id]);
     if (res.rows.length > 0) {
