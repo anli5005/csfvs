@@ -231,11 +231,11 @@ async function startServer() {
 
         const criteria = await getAllCriteria(db);
         
-        if (await userOwnsProject(db, req.user, project)) {
+        if (await userOwnsProject(db, req.user, res.locals.project)) {
             return res.status(400).send("You can't vote on your own project!");
         }
 
-        if (await getUserReview(db, req.user, project)) {
+        if (await getUserReview(db, req.user, res.locals.project)) {
             return res.status(400).send("Already voted");
         }
 
@@ -248,8 +248,8 @@ async function startServer() {
                 return {criteria_id: c.criteria_id, val};
             }
         });
-        await createReview(db, req.user, project, responses);
-        res.redirect(`/projects/${project.project_id}`);
+        await createReview(db, req.user, res.locals.project, responses);
+        res.redirect(`/projects/${res.locals.project.project_id}`);
     });
 
     app.get("/admin/users", async (req, res) => {
