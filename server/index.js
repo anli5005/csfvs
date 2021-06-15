@@ -143,11 +143,16 @@ async function startServer() {
         let showReviews = false;
         let criteria = await getAllCriteria(db);
         const canEdit = req.user.type === "admin" || await userOwnsProject(db, req.user, res.locals.project);
+        const unrestrictedCriteria = criteria.filter(c => {
+            // we could do a SQL query but this is easier
+            return !c.restricted
+        });
+        const judgedCriteria = req.user.type === "admin" ? criteria : unrestrictedCriteria;
 
         if (canEdit) {
             showReviews = true;
-            judged = processReviews(await getProjectReviews(db, res.locals.project, "judge"), criteria);
-            reviews = processReviews(await getProjectReviews(db, res.locals.project, "default"), criteria);
+            judged = processReviews(await getProjectReviews(db, res.locals.project, "judge"), judgedCriteria);
+            reviews = processReviews(await getProjectReviews(db, res.locals.project, "default"), unrestrictedCriteria);
         } else {
             review = await getUserReview(db, req.user, res.locals.project);
             if (review) {
@@ -164,7 +169,9 @@ async function startServer() {
             sidebar: await getSidebarDetails(db),
             project: res.locals.project,
             authors: formatAuthors(res.locals.project),
-            criteria: criteria,
+            votingCriteria: (req.user.type === "admin" || req.user.type === "judge") ? criteria : unrestrictedCriteria,
+            judgedCriteria, 
+            otherCriteria: unrestrictedCriteria,
             judged,
             review,
             reviews,

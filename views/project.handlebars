@@ -30,7 +30,7 @@
     <table class="table">
         <thead class="bg-white sticky-top">
             <tr>
-                {{#each criteria}}
+                {{#each judgedCriteria}}
                 <th scope="col">{{title}}</th>
                 {{/each}}
             </tr>
@@ -53,7 +53,7 @@
     <table class="table">
         <thead class="bg-white sticky-top">
             <tr>
-                {{#each criteria}}
+                {{#each otherCriteria}}
                 <th scope="col">{{title}}</th>
                 {{/each}}
             </tr>
@@ -86,7 +86,7 @@
     <h3>Send feedback</h3>
     {{/if}}
     <div class="row">
-        {{#each criteria}}
+        {{#each votingCriteria}}
         <div class="col-12 col-md-6 col-lg-4 criteria mt-3">
             {{#if (isequal type "free")}}
             <label for="{{criteria_id}}">
