@@ -15,7 +15,7 @@ import { getAllCriteria, createReview, getUserReview, getReviewCriteria, getProj
 import { OAuth2Strategy } from 'passport-google-oauth';
 import { getSidebarDetails } from './sidebar.js';
 import { lightColor, validateColor } from './color.js';
-import { getAllUsers, updateUserType } from './users.js';
+import { getAllUsers, changeUserType } from './users.js';
 import { exportReviews } from './export.js';
 
 config();
