@@ -89,7 +89,7 @@
 {{#if review}}
 <div class="p-4">
 {{else}}
-<form class="p-4" action="/projects/{{project.project_id}}/vote" method="POST">
+<form id="vote-form" class="p-4" action="/projects/{{project.project_id}}/vote" method="POST">
 {{/if}}
     {{#if review}}
     <h3 class="mb-0">Your review</h3>
@@ -128,7 +128,8 @@
     </div>
     {{#if review}}
     {{else}}
-    <button class="my-3 btn btn-primary" type="submit">Submit</button>
+    <button class="my-3 btn btn-primary" type="submit" id="submit-vote">Submit</button>
+    <script src="/voting.js"></script>
     {{/if}}
 {{#if review}}
 </div>
