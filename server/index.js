@@ -89,7 +89,7 @@ async function startServer() {
         res.render("home", {
             user: req.user,
             projects: await getUserProjects(db, req.user),
-            sidebar: await getSidebarDetails(db),
+            sidebar: await getSidebarDetails(db, req.user),
             home: true
         });
     });
@@ -167,7 +167,7 @@ async function startServer() {
 
         res.render("project", {
             user: req.user,
-            sidebar: await getSidebarDetails(db),
+            sidebar: await getSidebarDetails(db, req.user),
             project: res.locals.project,
             authors: formatAuthors(res.locals.project),
             emails: res.locals.project.emails.join(", "),
@@ -286,7 +286,7 @@ async function startServer() {
 
         res.render("users", {
             user: req.user,
-            sidebar: await getSidebarDetails(db),
+            sidebar: await getSidebarDetails(db, req.user),
             userManagement: true,
             users: await getAllUsers(db)
         });
@@ -338,7 +338,7 @@ async function startServer() {
 
         res.render("dump", {
             user: req.user,
-            sidebar: await getSidebarDetails(db),
+            sidebar: await getSidebarDetails(db, req.user),
             dump: true,
             random: Math.random().toString()
         });

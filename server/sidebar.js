@@ -1,13 +1,26 @@
 import { formatAuthors, getAllProjects } from "./projects.js";
 
-export async function getSidebarDetails(db) {
+export async function getSidebarDetails(db, user) {
     const projects = await getAllProjects(db);
+    let reviewCounts = {};
+    let reviewed = new Set();
+    (await getUserReviews(db, user)).forEach(({project_id}) => {
+        reviewed.add(project_id);
+    });
+
+    if (user.type === "judge" || user.type === "admin") {
+        (await getReviewCounts(db)).forEach(({project_id, all, judge}) => {
+            reviewCounts[project_id] = {all, judge};
+        });
+    }
 
     return {
         projects: projects.map(project => {
             return {
                 ...project,
-                authors: formatAuthors(project)
+                authors: formatAuthors(project),
+                reviewed: reviewed.has(project.project_id),
+                reviewCount: ((user.type === "judge" || user.type === "admin") && reviewCounts[project.project_id]) || {all: 0, judge: 0}
             };
         }).reduce((groups, project) => {
             const session = project.session || null;

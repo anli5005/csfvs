@@ -33,7 +33,12 @@
                     </div>
                     {{#each projects}}
                     <a class="list-group-item list-group-item-action {{#if (isequal @root.project.project_id project_id)}}active{{/if}}" href="/projects/{{project_id}}">
-                        <h6 class="mb-0 fw-6">{{name}}</h6>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h6 class="mb-0 fw-6">{{name}} {{#if reviewed}}<i class="bi bi-check-circle-fill" aria-label="Reviewed"></i>{{/if}}</h6>
+                            {{#if reviewCount}}
+                            <span class="badge bg-dark rounded-pill review-count-badge" data-bs-toggle="tooltip" data-bs-placement="top" title="{{reviewCount.judge}} judge(s){{#if (isequal @root.user.type "admin")}}, {{reviewCount.all}} total{{/if}}">{{reviewCount.judge}}{{#if (isequal @root.user.type "admin")}} • {{reviewCount.all}}{{/if}}</span>
+                            {{/if}}
+                        </div>
                         {{#if room}}<div class="project-subtitle">Room {{room}}</div>{{/if}}
                         <div class="project-subtitle">{{authors}}</div>
                     </a>

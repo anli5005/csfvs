@@ -7,5 +7,9 @@ document.addEventListener("readystatechange", e => {
                 active.scrollIntoView({block: "center"});
             }
         }
+        const badges = document.getElementsByClassName("review-count-badge");
+        for (let i = 0; i < badges.length; i++) {
+            new bootstrap.Tooltip(badges[i]);
+        }
     }
 });
