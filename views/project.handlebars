@@ -84,26 +84,27 @@
     <p>Thanks for your feedback!</p>
     {{else}}
     <h3>Send feedback</h3>
+    <p class="text-danger">* Required</p>
     {{/if}}
     <div class="row">
         {{#each votingCriteria}}
-        <div class="col-12 col-md-6 col-lg-4 criteria mt-3">
+        <div class="col-12 {{#if (isequal type "empty")}}{{else}}col-md-6 col-lg-4{{/if}} criteria mt-3">
             {{#if (isequal type "free")}}
             <label for="{{criteria_id}}">
-                <h5 class="{{#if description}}mb-0{{/if}}">{{title}}</h5>
+                <h5 class="{{#if description}}mb-0{{/if}}">{{title}}{{#if required}} <span class="text-danger">*</span>{{/if}}</h5>
                 {{#if description}}<p class="text-muted">{{description}}</p>{{/if}}
             </label>
-            <textarea class="form-control free-response" name="{{criteria_id}}" id="{{criteria_id}}" {{#if @root.review}}disabled{{/if}}>{{response.description}}</textarea>
+            <textarea {{#if required}}required{{/if}} class="form-control free-response" name="{{criteria_id}}" id="{{criteria_id}}" {{#if @root.review}}disabled{{/if}}>{{response.description}}</textarea>
             {{/if}}
             {{#if (isequal type "scale")}}
-            <h5 class="{{#if description}}mb-0{{/if}}">{{title}}</h5>
+            <h5 class="{{#if description}}mb-0{{/if}}">{{title}}{{#if required}} <span class="text-danger">*</span>{{/if}}</h5>
             {{#if description}}<p class="text-muted">{{description}}</p>{{/if}}
             <div class="scale">
-                <input type="radio" name="{{criteria_id}}" id="{{criteria_id}}-1" value="1" {{#if @root.review}}disabled{{/if}} {{#if (isequal response.val 1)}}checked{{/if}} /><label for="{{criteria_id}}-1">1</label>
-                <input type="radio" name="{{criteria_id}}" id="{{criteria_id}}-2" value="2" {{#if @root.review}}disabled{{/if}} {{#if (isequal response.val 2)}}checked{{/if}} /><label for="{{criteria_id}}-2">2</label>
-                <input type="radio" name="{{criteria_id}}" id="{{criteria_id}}-3" value="3" {{#if @root.review}}disabled{{/if}} {{#if (isequal response.val 3)}}checked{{/if}} /><label for="{{criteria_id}}-3">3</label>
-                <input type="radio" name="{{criteria_id}}" id="{{criteria_id}}-4" value="4" {{#if @root.review}}disabled{{/if}} {{#if (isequal response.val 4)}}checked{{/if}} /><label for="{{criteria_id}}-4">4</label>
-                <input type="radio" name="{{criteria_id}}" id="{{criteria_id}}-5" value="5" {{#if @root.review}}disabled{{/if}} {{#if (isequal response.val 5)}}checked{{/if}} /><label for="{{criteria_id}}-5">5</label>
+                <input {{#if required}}required{{/if}} type="radio" name="{{criteria_id}}" id="{{criteria_id}}-1" value="1" {{#if @root.review}}disabled{{/if}} {{#if (isequal response.val 1)}}checked{{/if}} /><label for="{{criteria_id}}-1">1</label>
+                <input {{#if required}}required{{/if}} type="radio" name="{{criteria_id}}" id="{{criteria_id}}-2" value="2" {{#if @root.review}}disabled{{/if}} {{#if (isequal response.val 2)}}checked{{/if}} /><label for="{{criteria_id}}-2">2</label>
+                <input {{#if required}}required{{/if}} type="radio" name="{{criteria_id}}" id="{{criteria_id}}-3" value="3" {{#if @root.review}}disabled{{/if}} {{#if (isequal response.val 3)}}checked{{/if}} /><label for="{{criteria_id}}-3">3</label>
+                <input {{#if required}}required{{/if}} type="radio" name="{{criteria_id}}" id="{{criteria_id}}-4" value="4" {{#if @root.review}}disabled{{/if}} {{#if (isequal response.val 4)}}checked{{/if}} /><label for="{{criteria_id}}-4">4</label>
+                <input {{#if required}}required{{/if}} type="radio" name="{{criteria_id}}" id="{{criteria_id}}-5" value="5" {{#if @root.review}}disabled{{/if}} {{#if (isequal response.val 5)}}checked{{/if}} /><label for="{{criteria_id}}-5">5</label>
             </div>
             {{/if}}
         </div>

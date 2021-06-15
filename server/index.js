@@ -246,15 +246,25 @@ async function startServer() {
             return res.status(400).send("Already voted");
         }
 
+        let isBad = false;
         const responses = criteria.map(c => {
             if (c.type === "free") {
+                if (c.required && req.body[c.criteria_id].length === 0) {
+                    isBad = true;
+                }
                 return {criteria_id: c.criteria_id, description: req.body[c.criteria_id]};
             } else if (c.type === "scale") {
                 const val = parseInt(req.body[c.criteria_id]);
-                if (isNaN(val) || (val < 1 || val > 5)) return {criteria_id: c.criteria_id};
+                if (isNaN(val) || (val < 1 || val > 5)) {
+                    isBad = true;
+                    return {criteria_id: c.criteria_id};
+                }
                 return {criteria_id: c.criteria_id, val};
             }
         });
+        if (isBad) {
+            return res.sendStatus(400);
+        }
         await createReview(db, req.user, res.locals.project, responses);
         res.redirect(`/projects/${res.locals.project.project_id}`);
     });
