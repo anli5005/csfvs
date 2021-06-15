@@ -28,7 +28,7 @@
 {{#if showReviews}}
 <div class="p-4">
     <h3>Judge reviews</h3>
-    <div class="table-responsive">
+    <div class="table-responsive w-100">
         <table class="table">
             <thead>
                 <tr>
@@ -105,7 +105,7 @@
     {{/if}}
     <div class="row">
         {{#each votingCriteria}}
-        <div class="col-12 {{#if (isequal type "empty")}}{{else}}col-md-6 col-lg-4{{/if}} criteria mt-3">
+        <div class="col-12 {{#if (isequal type "empty")}}mt-5 mb-3{{else}}col-md-6 col-lg-4 mt-3{{/if}} criteria">
             {{#if (isequal type "free")}}
             <label for="{{criteria_id}}">
                 <h5 class="{{#if description}}mb-0{{/if}}">{{title}}{{#if required}} <span class="text-danger">*</span>{{/if}}</h5>
@@ -125,8 +125,8 @@
             </div>
             {{/if}}
             {{#if (isequal type "empty")}}
-            <h5 class="h4 {{#if description}}mb-0{{/if}}">{{title}}</h5>
-            {{#if description}}<p class="text-muted">{{description}}</p>{{/if}}
+            <h5 class="h4 mb-0">{{title}}</h5>
+            {{#if description}}<p class="text-muted mb-0">{{description}}</p>{{/if}}
             {{/if}}
         </div>
         {{/each}}
