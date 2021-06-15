@@ -20,7 +20,7 @@ export async function getSidebarDetails(db, user) {
                 ...project,
                 authors: formatAuthors(project),
                 reviewed: reviewed.has(project.project_id),
-                reviewCount: ((user.type === "judge" || user.type === "admin") && reviewCounts[project.project_id]) || {all: 0, judge: 0}
+                reviewCount: (user.type === "judge" || user.type === "admin") && (reviewCounts[project.project_id] || {all: 0, judge: 0})
             };
         }).reduce((groups, project) => {
             const session = project.session || null;
