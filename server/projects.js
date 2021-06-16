@@ -29,6 +29,15 @@ export async function updateProject(db, project, params) {
         );
 }
 
+export async function addProject(db, user, name) {
+    const id = (await db.query(
+        "INSERT INTO projects (name) VALUES ($1) RETURNING project_id",
+        [name]
+    )).rows[0].project_id;
+    await db.query("INSERT INTO projects_users_xref (project_id, email) VALUES ($1, $2)", [id, user.email]);
+    return id;
+}
+
 export function formatAuthors(project) {
     return project.names.map((name, i) =>
         name && name.length > 0 ? name : project.emails[i]

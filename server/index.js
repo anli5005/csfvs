@@ -10,7 +10,7 @@ import { fileURLToPath } from 'node:url';
 import exphbs from 'express-handlebars';
 import passport from 'passport';
 import { findOrCreateUser, registerSerialization } from './auth.js';
-import { formatAuthors, getProjectById, getUserProjects, userOwnsProject, updateProject } from './projects.js';
+import { formatAuthors, getProjectById, getUserProjects, userOwnsProject, updateProject, addProject } from './projects.js';
 import { getAllCriteria, createReview, getUserReview, getReviewCriteria, getProjectReviews, processReviews, deleteReview } from './reviews.js';
 import { OAuth2Strategy } from 'passport-google-oauth';
 import { getSidebarDetails } from './sidebar.js';
@@ -121,6 +121,29 @@ async function startServer() {
         req.logout();
         res.redirect('/');
     });
+
+    if (process.env.ALLOW_ADDING) {
+        app.get("/projects/add", async (req, res, next) => {
+            if (!req.user) {
+                return res.redirect("/login");
+            }
+
+            res.render("projectadd", {
+                user: req.user,
+                layout: "simple"
+            });
+        });
+
+        app.post("/projects/add", async (req, res, next) => {
+            if (!req.user) {
+                return res.redirect("/login");
+            }
+
+            if (typeof req.body.name !== "string") return res.sendStatus(400);
+            const id = await addProject(db, req.user, req.body.name);
+            res.redirect(`/projects/${id}`);
+        });
+    }
 
     app.use("/projects/:id", async (req, res, next) => {
         try {

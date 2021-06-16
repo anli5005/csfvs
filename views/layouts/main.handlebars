@@ -14,7 +14,10 @@
             {{#with sidebar}}
             <div class="border-end sidebar col-3" id="sidebar">
                 <div class="list-group list-group-flush border-bottom">
-                    <a class="list-group-item list-group-item-action {{#if @root.home}}active{{/if}}" href="/">Home</a></li>    
+                    <a class="list-group-item list-group-item-action {{#if @root.home}}active{{/if}}" href="/">Home</a>
+                    {{#if allowAdding}}
+                    <a class="list-group-item list-group-item-action" href="/projects/add">Add project</a>
+                    {{/if}}
                     {{#if (isequal @root.user.type "admin")}}
                     <div class="sticky-top list-group-item list-group-item-danger text-uppercase fw-bold py-1"
                         style="font-size: 0.75rem;">

@@ -36,7 +36,8 @@ export async function getSidebarDetails(db, user) {
             } else {
                 return groups.concat([{session, projects: [project]}]);
             }
-        }, [])
+        }, []),
+        allowAdding: process.env.ALLOW_ADDING
     };
 }
 
