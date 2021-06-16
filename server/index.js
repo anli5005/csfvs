@@ -315,7 +315,7 @@ async function startServer() {
             } else if (c.type === "scale") {
                 const val = parseInt(req.body[c.criteria_id]);
                 if (isNaN(val) || (val < 1 || val > 5)) {
-                    isBad = true;
+                    if (c.required) isBad = true;
                     return {criteria_id: c.criteria_id};
                 }
                 return {criteria_id: c.criteria_id, val};
